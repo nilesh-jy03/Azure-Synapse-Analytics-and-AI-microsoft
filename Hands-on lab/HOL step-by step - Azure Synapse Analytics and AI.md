@@ -59,8 +59,8 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Row level security](#task-2-row-level-security)
     - [Task 3: Dynamic data masking](#task-3-dynamic-data-masking)
   - [Exercise 7: Machine Learning](#exercise-7-machine-learning)
-    - [Task 1: Create a SQL Datastore and source Dataset (Portal)](#task-1-create-a-sql-datastore-and-source-dataset-(Portal))
-    - [Task 1: Create a SQL Datastore and source Dataset (CLI)](#task-1-create-a-sql-datastore-and-source-dataset-(CLI))
+    - [Task 1: Create a SQL Datastore and source Dataset: Portal](#task-1-create-a-sql-datastore-and-source-dataset:-Portal)
+    - [Task 1: Create a SQL Datastore and source Dataset: CLI](#task-1-create-a-sql-datastore-and-source-dataset:-CLI)
     - [Task 2: Create compute infrastructure](#task-2-create-compute-infrastructure)
     - [Task 3: Use a notebook in AML Studio to prepare data and create a Product Seasonality Classifier model using XGBoost](#task-3-use-a-notebook-in-aml-studio-to-prepare-data-and-create-a-product-seasonality-classifier-model-using-xgboost)
     - [Task 4: Leverage Automated ML to create and deploy a Product Seasonality Classifier model](#task-4-leverage-automated-ml-to-create-and-deploy-a-product-seasonality-classifier-model)
@@ -1754,7 +1754,7 @@ Using Azure Synapse Analytics, data scientists are no longer required to use sep
 
 In this exercise, you will create multiple machine learning models. You will learn how to consume these models in your notebook. You will also deploy a model as a web service to Azure Container Instances and consume the service.
 
-### Task 1: Create a SQL Datastore and source Dataset (Portal)
+### Task 1: Create a SQL Datastore and source Dataset: Portal
 
 1. Open the lab resource group, locate and open the **amlworkspace{{suffix}}** Machine Learning resource.
 
@@ -1820,7 +1820,7 @@ In this exercise, you will create multiple machine learning models. You will lea
 
     ![The dataset Confirm details screen is displayed showing a summary of the choices from the previous steps.](media/aml_dataset_confirmdetails.png "The dataset Confirm details screen")
 
-### Task 1: Create a SQL Datastore and source Dataset (CLI)
+### Task 1: Create a SQL Datastore and source Dataset: CLI
 
 1. Open Azure Cloud Shell. Ensure that a **PowerShell** terminal opens.
 
