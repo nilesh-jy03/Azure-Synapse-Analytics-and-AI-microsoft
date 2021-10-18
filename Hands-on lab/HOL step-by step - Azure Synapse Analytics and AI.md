@@ -1280,15 +1280,13 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
     | storage-container-name | Enter **invoices** |
     | skillset-function | Enter function URL from the function you published.|
 
-17. Select **Update** to update the collection with the modified values.
+17. Select **Persist All**, followed by **Save** from the collection toolbar menus to update the collection with the modified values.
 
     ![The Edit Collection Variables screen is shown with a sampling of modified values.](media/ex5-task3-014.png "The Edit Collection Values screen")
 
 18. Expand the **Create a KnowledgeStore** collection, and select the **Create Index** call, then select the **Body** tab and review the content. For this call, and every subsequent call from Postman - ensure the Content Type is set to **JSON**.
 
     ![The Create Index call is selected from the collection, and the Body tab is highlighted.](media/ex5-task3-015.png "The Create Index Call")
-
-    ![The Postman Body tab is selected with the JSON item highlighted.](media/postman_jsoncontenttype.png "The Postman Body tab")
 
 19. Select "Send".
 
@@ -1312,9 +1310,7 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
 ### Task 4: Create the Synapse Pipeline
 
-1. Open your Synapse workspace.
-
-    ![The Azure Synapse Workspace resource screen is shown with the Launch Synapse Studio button highlighted.](media/ex5-task4-001.png)
+1. Return to your Synapse workspace (Synapse Studio).
 
 2. Expand the left menu and select the **Develop** item. From the **Develop** blade, expand the **+** button and select the **SQL script** item.
 
@@ -1372,9 +1368,9 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The pipeline designer is shown with an indicator of a drag and drop operation of the data flow activity.](media/ex5-task4-018.png "The Data flow activity")
 
-14. On the **Adding data flow** form, select **Create new data flow** and select **Data flow**.
+14. On the **Settings** tab of the Data flow activity, select the **New** link next to the **Dataflow** field.
 
-    ![The Adding data flow form is displayed populated with the preceding values.](media/ex5-task4-019.png)
+    ![The data flow activity settings tab displays with the + New link highlighted next to the Dataflow field.](media/new-dataflow.png "New data flow")
 
 15. On the **Properties** blade of the new Data Flow, on **General** tab, enter **NewInvoicesProcessing** in the **Name** field.
 
@@ -1390,9 +1386,9 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The New dataset blade is displayed with Azure Blob Storage selected.](media/ex5-task4-022.png "Azure Blob Storage dataset")
 
-19. On the **Select format** blade, select **Json** then select **Continue**.
+19. On the **Select format** blade, select **JSON** then select **Continue**.
 
-    ![The select format screen is displayed with Json selected as the type.](media/ex5-task4-023.png "Select format form")
+    ![The select format screen is displayed with JSON selected as the type.](media/ex5-task4-023.png "Select format form")
 
 20. On the **Set properties** screen, name the dataset **InvoicesJson** then for the linked service field, choose the Azure Storage linked service **asastore{suffix}**.
 
@@ -1477,43 +1473,39 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The InvoiceProcessing tab is selected at the top of the workspace.](media/ex5-task4-039.png "The InvoiceProcessing pipeline tab")
 
-38. Select the data flow activity on the pipeline designer surface, then in the bottom pane, select the **Settings** tab.
-
-    ![The data flow activity Settings tab is displayed.](media/ex5-task4-040.png "The Settings tab")
-
-39. Under the **PolyBase** settings, set the **Staging linked service** to the **asastore{suffix}** linked service. Enter **invoices-staging** as the **Storage staging folder**.
+38. Ensure the data flow field is set to **NewInvoicesProcessing**, then expand the **Staging** section. Set the **Staging linked service** to the **asastore{suffix}** linked service. Enter **invoices-staging** as the **Storage staging folder**.
 
     ![The data flow activity Settings tab is displayed with its form populated as indicated above.](media/ex5-task4-041.png "The Settings tab")
 
-40. Select **Publish All** from the top toolbar.
+39. Select **Publish All** from the top toolbar.
 
-    ![The Publish All button is selected from the top toolbar.](media/ex5-task4-042.png "The Publish all button")
+    ![The Publish All button is selected from the top toolbar.](media/publishall_toolbarmenu.png "The Publish all button")
 
-41. Select **Publish**.
+40. Select **Publish**.
 
-42. Within a few moments, you should see a notification that Publishing completed.
+41. Within a few moments, you should see a notification that Publishing completed.
 
     ![The Publishing completed notification is shown.](media/ex5-task4-043.png "The Publishing Completed notification")
 
-43. From the left menu, select the **Monitor** hub, then ensure the **Pipeline runs** option is selected from the hub menu.
+42. From the left menu, select the **Monitor** hub, then ensure the **Pipeline runs** option is selected from the hub menu.
 
     ![The Monitor hub is selected from the left menu.](media/ex5-task4-044.png "The Monitor Hub menu option")
 
-44. In approximately 5 minutes, you should see the **InvoiceProcessing** pipeline begin processing. You may need to refresh this list to see it appear, a refresh button is located in the toolbar.
+43. In approximately 5 minutes, you should see the **InvoiceProcessing** pipeline begin processing. You may need to refresh this list to see it appear, a refresh button is located in the toolbar.
 
     ![On the Pipeline runs list, the InvoiceProcessing pipeline is shown as in-progress.](media/ex5-task4-045.png "The Pipeline runs list")
 
-45. After about 3 or 4 minutes it will complete. You may need to refresh the list to see the completed pipeline.
+44. After about 3 or 4 minutes it will complete. You may need to refresh the list to see the completed pipeline.
 
     ![The Pipeline runs list is displayed with the InvoiceProcessing pipeline shown as succeeded.](media/ex5-task4-046.png "The pipeline runs list")
 
-46. From the left menu, select the **Develop** hub, then expand the **+** button an choose **SQL Script**. Ensure the proper database is selected, then run the following query to verify the data from the two test invoices.
+45. From the left menu, select the **Develop** hub, then expand the **+** button an choose **SQL Script**. Ensure the proper database is selected, then run the following query to verify the data from the two test invoices.
 
     ```SQL
     SELECT * FROM wwi_mcw.Invoices
     ```
 
-    ![show the data in the databases](media/ex5-task4-047.png)
+    ![The tabular results of the previous query is shown.](media/ex5-task4-047.png "SQL Query results")
 
 ## Exercise 6: Security
 
