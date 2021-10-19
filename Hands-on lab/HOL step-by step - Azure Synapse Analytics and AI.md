@@ -40,7 +40,6 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Populate the sale table](#task-2-populate-the-sale-table)
     - [Task 3: Create the customer information table](#task-3-create-the-customer-information-table)
     - [Task 4: Populate the customer information table](#task-4-populate-the-customer-information-table)
-- [5. Now we will need to define the destination dataset for our data. In this case we will be storing customer information data in our SQL Pool. On the **Data** blade, expand the **+** button and select **Integration dataset**.](#5-now-we-will-need-to-define-the-destination-dataset-for-our-data-in-this-case-we-will-be-storing-customer-information-data-in-our-sql-pool-on-the-data-blade-expand-the--button-and-select-integration-dataset)
     - [Task 5: Create the campaign analytics table](#task-5-create-the-campaign-analytics-table)
     - [Task 6: Populate the campaign analytics table](#task-6-populate-the-campaign-analytics-table)
     - [Task 7: Populate the product table](#task-7-populate-the-product-table)
@@ -456,7 +455,7 @@ Over the past 5 years, Wide World Importers has amassed over 3 billion rows of s
     ![The Set properties form is displayed with the values specified in the previous table.](media/customerinfodatasetpropertiesform.png "Configuring the dataset")
 
 5. Now we will need to define the destination dataset for our data. In this case we will be storing customer information data in our SQL Pool. On the **Data** blade, expand the **+** button and select **Integration dataset**.
-=
+
 6. On the **New integration dataset** blade, enter **Azure Synapse** as a search term and select the **Azure Synapse Analytics** item. Select **Continue**.
 
     ![The New integration dataset form is shown with Azure Synapse entered in the search box and the Azure Synapse Analytics item highlighted.](media/dataset_azuresynapseanalytics.png "Azure Synapse Analytics Dataset")
@@ -476,7 +475,7 @@ Over the past 5 years, Wide World Importers has amassed over 3 billion rows of s
 
     ![The top toolbar is displayed with the Publish all button highlighted.](media/publishall_toolbarmenu.png "Publishing changes")
 
-9. Next, we will define a pipeline to populate data into the CustomerInfo table. From the left menu, select **Integrate**. From the Integrate blade, select the **+** button and select the **Pipeline** item.
+9.  Next, we will define a pipeline to populate data into the CustomerInfo table. From the left menu, select **Integrate**. From the Integrate blade, select the **+** button and select the **Pipeline** item.
 
     ![The Integrate menu item is selected from the left menu. On the Integrate blade, the + button is expanded with the Pipeline item highlighted.](media/orchestrate_newpipelinemenu.png "The Integrate Hub")
 
@@ -626,7 +625,7 @@ Similar to the customer information table, we will also be populating the campai
 
     ![The top toolbar is displayed with the Publish all button highlighted.](media/publishall_toolbarmenu.png "Publish changes")
 
-10. Since our source data is malformed and does not contain an Analyst column, we will need to create a data flow to transform the source data. A data flow allows you to graphically define dataset filters and transformations without writing code. These data flows can be leveraged as an activity in an integration* pipeline. Create a new data flow, start by selecting **Develop** from the left menu, and in the **Develop** blade, expand the **+** button and select **Data flow**.
+10. Since our source data is malformed and does not contain an Analyst column, we will need to create a data flow to transform the source data. A data flow allows you to graphically define dataset filters and transformations without writing code. These data flows can be leveraged as an activity in an integration pipeline. Create a new data flow, start by selecting **Develop** from the left menu, and in the **Develop** blade, expand the **+** button and select **Data flow**.
 
     ![From the left menu, the Develop item is selected. From the Develop blade the + button is expanded with the Data flow item highlighted.](media/develop_newdataflow_menu.png "Create a new data flow")
 
