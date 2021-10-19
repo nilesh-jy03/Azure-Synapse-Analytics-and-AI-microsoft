@@ -115,7 +115,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     >   2. Your password must contain characters from three of the following categories: English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.).
     >   3. Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters.
   
-3. Check the **I agree to the terms and conditions stated above**, then select the **Purchase** button.
+3. Select **Review + Create**, then **Create** on the validation screen.
 
     > **Note**: You may experience a deployment step failing in regard to Role Assignment. This error may safely be ignored.
 
@@ -179,5 +179,7 @@ When executing the script below, it is important to let the scripts run to compl
     ![The Azure Cloud Shell window is displayed with a sample of the output from the preceding command.](media/bhol_sampleshelloutput.png "The Azure Cloud Shell output")
 
 3. At the end of the script, you should see a message indicating **Environment validation has succeeded**.
+
+    ![The PowerShell console output displays with a message indicating the Environment validation has succeeded.](media/environment_validation_success.png "Environment Validation")
 
 You should follow all steps provided *before* performing the Hands-on lab.

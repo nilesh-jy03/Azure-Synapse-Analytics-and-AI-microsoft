@@ -59,7 +59,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Row level security](#task-2-row-level-security)
     - [Task 3: Dynamic data masking](#task-3-dynamic-data-masking)
   - [Exercise 7: Machine Learning](#exercise-7-machine-learning)
-    - [Task 1: Create a SQL Datastore and source Dataset](#task-1-create-a-sql-datastore-and-source-dataset)
+    - [Task 1: Create a SQL Datastore and source Dataset: Portal](#task-1-create-a-sql-datastore-and-source-dataset-portal)
     - [Task 2: Create compute infrastructure](#task-2-create-compute-infrastructure)
     - [Task 3: Use a notebook in AML Studio to prepare data and create a Product Seasonality Classifier model using XGBoost](#task-3-use-a-notebook-in-aml-studio-to-prepare-data-and-create-a-product-seasonality-classifier-model-using-xgboost)
     - [Task 4: Leverage Automated ML to create and deploy a Product Seasonality Classifier model](#task-4-leverage-automated-ml-to-create-and-deploy-a-product-seasonality-classifier-model)
@@ -151,9 +151,9 @@ All exercises in this lab utilize the workspace Synapse Studio user interface. T
   
     ![In the resource list, the Synapse Workspace item is selected.](media/resourcelist_synapseworkspace.png "The resource group listing")
 
-5. On the **Overview** tab of the Synapse Workspace page, select the **Launch Synapse Studio** item from the top toolbar. Alternatively you can select the Workspace web URL link.
+5. On the **Overview** tab of the Synapse Workspace page, select the **Open Synapse Studio** card from beneath the **Getting Started** heading. Alternatively you can select the Workspace web URL link.
 
-    ![On the Synapse workspace resource screen, the Overview pane is shown with the Launch Synapse Studio button highlighted in the top toolbar. The Workspace web URL value is also highlighted.](media/workspaceresource_launchsynapsestudio.png "Launching Synapse Studio")
+    ![On the Synapse workspace resource screen, the Overview pane is shown with the Open Synapse Studio card highlighted. The Workspace web URL value is also highlighted.](media/workspaceresource_launchsynapsestudio.png "Launching Synapse Studio")
 
 ## Exercise 2: Create and populate the supporting tables in the SQL Pool
 
@@ -475,7 +475,7 @@ Over the past 5 years, Wide World Importers has amassed over 3 billion rows of s
 
     ![The top toolbar is displayed with the Publish all button highlighted.](media/publishall_toolbarmenu.png "Publishing changes")
 
-9. Next, we will define a pipeline to populate data into the CustomerInfo table. From the left menu, select **Integrate**. From the Integrate blade, select the **+** button and select the **Pipeline** item.
+9.  Next, we will define a pipeline to populate data into the CustomerInfo table. From the left menu, select **Integrate**. From the Integrate blade, select the **+** button and select the **Pipeline** item.
 
     ![The Integrate menu item is selected from the left menu. On the Integrate blade, the + button is expanded with the Pipeline item highlighted.](media/orchestrate_newpipelinemenu.png "The Integrate Hub")
 
@@ -516,7 +516,7 @@ Over the past 5 years, Wide World Importers has amassed over 3 billion rows of s
 18. View the status of the completed run by locating the **ASAMCW - Exercise 2 - Copy Customer Information** pipeline in the Integrate blade. Expand the actions menu, and select the **Monitor** item.
 
     ![In the Integrate blade, the Action menu is displayed with the Monitor item selected on the ASAMCW - Exercise 2 - Copy Customer Information pipeline.](media/pipeline_copycustomerinformation_monitormenu.png "Monitoring the pipeline")
-  
+
 19. You should see a successful run of the pipeline we created in the **Pipeline runs** table.
   
     ![On the pipeline runs screen, a successful pipeline run is highlighted in the table.](media/pipeline_run_customerinfo_successful.png "Successful pipeline run indicator")
@@ -625,7 +625,7 @@ Similar to the customer information table, we will also be populating the campai
 
     ![The top toolbar is displayed with the Publish all button highlighted.](media/publishall_toolbarmenu.png "Publish changes")
 
-10. Since our source data is malformed and does not contain an Analyst column, we will need to create a data flow to transform the source data. A data flow allows you to graphically define dataset filters and transformations without writing code. These data flows can be leveraged as an activity in an orchestration pipeline. Create a new data flow, start by selecting **Develop** from the left menu, and in the **Develop** blade, expand the **+** button and select **Data flow**.
+10. Since our source data is malformed and does not contain an Analyst column, we will need to create a data flow to transform the source data. A data flow allows you to graphically define dataset filters and transformations without writing code. These data flows can be leveraged as an activity in an integration pipeline. Create a new data flow, start by selecting **Develop** from the left menu, and in the **Develop** blade, expand the **+** button and select **Data flow**.
 
     ![From the left menu, the Develop item is selected. From the Develop blade the + button is expanded with the Data flow item highlighted.](media/develop_newdataflow_menu.png "Create a new data flow")
 
@@ -642,7 +642,7 @@ Similar to the customer information table, we will also be populating the campai
     | Field | Value |
     |-------|-------|
     | Output stream name  | Enter **campaignanalyticscsv**. |
-    | Source type | **Dataset** |
+    | Source type | **Integration Dataset** |
     | Dataset | **asamcw_campaignanalytics_csv** |
     | Skip line count | Enter **1**. |  
 
@@ -702,7 +702,7 @@ Similar to the customer information table, we will also be populating the campai
 
     ![The Select settings tab is displayed with the form filled as described in the preceding table.](media/dataflow_mapcampaignanalytics_selectsettings.png "Configuring the Select schema modifier")
 
-19. Select the **+** to the right of the **mapCampaignAnalytics** source, then select the **Derived Column** schema modifier from the context menu.
+19. Select the **+** to the right of the **mapcampaignanalytics** source, then select the **Derived Column** schema modifier from the context menu.
 
 20. Under **Derived column's settings**, configure the following:
 
@@ -764,9 +764,7 @@ Similar to the customer information table, we will also be populating the campai
   
     ![The Activities menu of the pipeline is displayed with the Move and transform section expanded. An arrow indicating a drag operation shows adding a Data flow activity to the design surface of the pipeline.](media/pipeline_sales_dataflowactivitymenu.png "Adding a data flow activity to the pipeline")
 
-31. In the **Adding data flow** blade, select the data flow **ASAMCW_Exercise_2_Campaign_Analytics_Data**, then **Finish**. Select the Mapping Data Flow activity on the design surface.
-
-32. In the bottom pane, select the **Settings** tab and set the form fields to the following values:
+31. In the bottom pane, select the **Settings** tab and set the form fields to the following values:
 
     | Field | Value |
     |-------|-------|
@@ -777,19 +775,19 @@ Similar to the customer information table, we will also be populating the campai
 
     ![The data flow activity Settings tab is displayed with the fields specified in the preceding table highlighted.](media/pipeline_campaigndata_dataflowsettings.png "Configuring the data flow activity")
 
-33. In the top toolbar, select **Publish all** to publish the new pipeline. When prompted, select the **Publish** button to commit the changes.
+32. In the top toolbar, select **Publish all** to publish the new pipeline. When prompted, select the **Publish** button to commit the changes.
 
     ![The top toolbar is displayed with the Publish all button highlighted.](media/publishall_toolbarmenu.png "Publish changes")
 
-34. Once published, expand the **Add trigger** item on the pipeline designer toolbar, and select **Trigger now**. In the **Pipeline run** blade, select **OK** to proceed with the latest published configuration. You will see notification toast window indicating the pipeline is running and when it has completed.
+33. Once published, expand the **Add trigger** item on the pipeline designer toolbar, and select **Trigger now**. In the **Pipeline run** blade, select **OK** to proceed with the latest published configuration. You will see notification toast window indicating the pipeline is running and when it has completed.
 
-35. View the status of the pipeline run by locating the **ASAMCW - Exercise 2 - Copy Campaign Analytics Data** pipeline in the Integrate blade. Expand the actions menu, and select the **Monitor** item.
+34. View the status of the pipeline run by locating the **ASAMCW - Exercise 2 - Copy Campaign Analytics Data** pipeline in the Integrate blade. Expand the actions menu, and select the **Monitor** item.
 
     ![In the Integrate blade, the Action menu is displayed with the Monitor item selected on the ASAMCW - Exercise 2 - Copy Campaign Analytics Data pipeline.](media/orchestrate_pipeline_monitor_copycampaigndata.png "Monitoring the pipeline run")
 
-36. You should see a run of the pipeline we created in the **Pipeline runs** table showing as in progress. You will need to refresh this table from time to time to see updated progress. Once it has completed. You should see the pipeline run displayed with a Status of **Succeeded**.
+35. You should see a run of the pipeline we created in the **Pipeline runs** table showing as in progress. You will need to refresh this table from time to time to see updated progress. Once it has completed. You should see the pipeline run displayed with a Status of **Succeeded**.
 
-37. Verify the table has populated by creating a new query. Select the **Develop** item from the left menu, and in the **Develop** blade, expand the **+** button, and select **SQL script**. In the query window, be sure to connect to the SQL Pool database (`SQLPool01`), then paste and run the following query. When complete, select the **Discard all** button from the top toolbar.
+36. Verify the table has populated by creating a new query. Select the **Develop** item from the left menu, and in the **Develop** blade, expand the **+** button, and select **SQL script**. In the query window, be sure to connect to the SQL Pool database (`SQLPool01`), then paste and run the following query. When complete, select the **Discard all** button from the top toolbar.
 
   ```sql
     select count(Region) from wwi_mcw.CampaignAnalytics;
@@ -882,21 +880,21 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
 2. This will generate a notebook with PySpark code to load the data in a dataframe and display 100 rows with the header.
 
-3. Attach the notebook to a Spark pool.
+3. Attach the notebook to a Spark pool. Your Spark pool may not be running and will not have the green checkmark, it is fine to proceed.
 
     ![The Spark pool list is displayed.](media/attach-spark-pool.png "Attach to Spark pool")
 
 4. Select **Run all** on the notebook toolbar to execute the notebook.
 
     > **Note:** The first time you run a notebook in a Spark pool, Synapse creates a new session. This can take approximately 5 minutes.
-    
+
     > **Note:** To run just the cell, either hover over the cell and select the _Run cell_ icon to the left of the cell, or select the cell then type **Ctrl+Enter** on your keyboard.
 
 5. Create a new cell underneath by selecting **{} Add code** when hovering over the blank space at the bottom of the notebook.
 
     ![The Add Code menu option is highlighted.](media/new-cell.png "Add code")
 
-6. The Spark engine can analyze the Parquet files and infer the schema. To do this, enter the following in the new cell:
+6. The Spark engine can analyze the Parquet files and infer the schema. To do this, enter the following in the new cell, then execute the cell by pressing SHIFT + Enter:
 
     ```python
     df.printSchema()
@@ -950,7 +948,7 @@ A common format for exporting and storing data is with text based files. These c
 
 2. Ensure **Built-in** is selected in the **Connect to** dropdown list above the query window.
 
-    ![The Built-in SQL on-demand connection is highlighted on the query window toolbar.](media/sql-on-demand-selected.png "SQL on-demand")
+    ![The Built-in SQL connection is highlighted on the query window toolbar.](media/sql-on-demand-selected.png "Built-in")
 
 3. In this scenario, we will be querying into the CSV file that was used to populate the product table. This file is located in the `asadatalake{SUFFIX}` account at: **wwi-02/data-generators/generator-product.csv**. We will select all data from this file. Copy and paste the following query into the query window and select **Run** from the query window toolbar menu. Remember to replace `asadatalake{SUFFIX}` with your storage account name.
 
@@ -1059,7 +1057,7 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The lab resources list is shown with the asastore storage account highlighted.](media/ex5-task1a-000.png "Lab resource group listing")
   
-2. From the left menu, beneath **Blob service**, select **Containers**. From the top toolbar menu of the **Containers** screen, select **+ Container**.
+2. From the left menu, beneath **Data storage**, select **Containers**. From the top toolbar menu of the **Containers** screen, select **+ Container**.
   
     ![The Containers screen is displayed with Containers selected from the left menu, and + Container selected from the toolbar.](media/ex5-task1a-001.png "Azure Storage Container screen")
 
@@ -1087,27 +1085,23 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
 11. From the taskbar, select **Upload**. Upload all invoices located in **Hands-on lab/artifacts/sample_invoices/Train**. These files are Invoice_1.pdf, Invoice_2.pdf, Invoice_3.pdf, Invoice_4.pdf and Invoice_5.pdf.
 
-12. From the left menu, select **Access keys**.
+12. From the left menu, select **Access keys**. From the top toolbar menu, select **Show keys**, then copy the **Connection string** value beneath **key1**. Save it to notepad, Visual Studio Code, or another text file. We'll use this several times
 
-    ![The left menu is displayed with the Access keys link highlighted.](media/ex5-task1a-003.png "The Access keys menu item")
+    ![The Access keys menu item is selected from the left menu, the Show/Hide keys button is highlighted in the toolbar menu. The copy button is selected next to the key1 connection string.](media/ex5-task1a-004.png "Copying the key1 connection string value")
 
-13. Copy the **Connection string** value beneath **key1**. Save it to notepad, Visual Studio Code, or another text file. We'll use this several times
+13. From the left menu, beneath **Security + Networking**, select **Shared access signature**.
 
-    ![The copy button is selected next to the key1 connection string.](media/ex5-task1a-004.png "Copying the key1 connection string value")
+14. Check all checkboxes for Allowed resource types and choose **Generate SAS and connection string**.
 
-14. From the left menu, beneath **Settings**, select **Shared access signature**.
+    ![All Allowed resource types are checked and the Generate SAS and connection string button is highlighted.](media/ex5-task1a-012.png "SAS Configuration form")
 
-15. Make sure all the checkboxes are selected and choose **Generate SAS and connection string**.
-
-    ![The configuration form is displayed for SAS generation.](media/ex5-task1a-012.png "SAS Configuration form")
-
-16. Copy the generated **Blob service SAS URL** to the same text file as above.
+15. Copy the generated **Blob service SAS URL** to the same text file as above.
 
     ![The SAS form is shown with the shared access signature blob service SAS URL highlighted.](media/ex5-task1a-013.png "The SAS URL")
 
-17. Modify the SAS URL that you just copied and add the **invoices** container name directly before the **?** character.
+16. Modify the SAS URL that you just copied and add the **invoices** container name directly before the **?** character.
 
-    >**Example**: https://asastore{{suffix}.blob.core.windows.net/invoices?sv=2019-12-12&ss=bfqt&srt ...
+    >**Example**: https://asastore{suffix}.blob.core.windows.net/invoices?sv=2019-12-12&ss=bfqt&srt ...
 
 ### Task 2: Create and train an Azure Forms Recognizer model and setup Cognitive Search
 
@@ -1119,7 +1113,7 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The Form Recognizer overview screen is displayed with the Create button highlighted.](media/ex5-task2a-02.png "The Form Recognizer overview form")
 
-3. Enter the following configuration settings, then select **Create**:
+3. Enter the following configuration settings, then select **Review + create**, then select **Create** on the validation screen.
 
     | Field | Value |
     |-------|-------|
@@ -1128,7 +1122,6 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
     | Region | Select  the lab region. |
     | Name  | Enter a unique name (denoted by the green checkmark indicator) for the form recognition service. |
     | Pricing Tier | Select **Free F0**. |
-    | Confirmation checkbox | Checked. |
   
     ![The Form Recognizer configuration screen is displayed populated with the preceding values.](media/ex5-task2a-03.png "Form Recognizer configuration screen")
 
@@ -1285,15 +1278,13 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
     | storage-container-name | Enter **invoices** |
     | skillset-function | Enter function URL from the function you published.|
 
-17. Select **Update** to update the collection with the modified values.
+17. Select **Persist All**, followed by **Save** from the collection toolbar menus to update the collection with the modified values.
 
     ![The Edit Collection Variables screen is shown with a sampling of modified values.](media/ex5-task3-014.png "The Edit Collection Values screen")
 
 18. Expand the **Create a KnowledgeStore** collection, and select the **Create Index** call, then select the **Body** tab and review the content. For this call, and every subsequent call from Postman - ensure the Content Type is set to **JSON**.
 
     ![The Create Index call is selected from the collection, and the Body tab is highlighted.](media/ex5-task3-015.png "The Create Index Call")
-
-    ![The Postman Body tab is selected with the JSON item highlighted.](media/postman_jsoncontenttype.png "The Postman Body tab")
 
 19. Select "Send".
 
@@ -1317,9 +1308,7 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
 ### Task 4: Create the Synapse Pipeline
 
-1. Open your Synapse workspace.
-
-    ![The Azure Synapse Workspace resource screen is shown with the Launch Synapse Studio button highlighted.](media/ex5-task4-001.png)
+1. Return to your Synapse workspace (Synapse Studio).
 
 2. Expand the left menu and select the **Develop** item. From the **Develop** blade, expand the **+** button and select the **SQL script** item.
 
@@ -1377,9 +1366,9 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The pipeline designer is shown with an indicator of a drag and drop operation of the data flow activity.](media/ex5-task4-018.png "The Data flow activity")
 
-14. On the **Adding data flow** form, select **Create new data flow** and select **Data flow**.
+14. On the **Settings** tab of the Data flow activity, select the **New** link next to the **Dataflow** field.
 
-    ![The Adding data flow form is displayed populated with the preceding values.](media/ex5-task4-019.png)
+    ![The data flow activity settings tab displays with the + New link highlighted next to the Dataflow field.](media/new-dataflow.png "New data flow")
 
 15. On the **Properties** blade of the new Data Flow, on **General** tab, enter **NewInvoicesProcessing** in the **Name** field.
 
@@ -1395,9 +1384,9 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The New dataset blade is displayed with Azure Blob Storage selected.](media/ex5-task4-022.png "Azure Blob Storage dataset")
 
-19. On the **Select format** blade, select **Json** then select **Continue**.
+19. On the **Select format** blade, select **JSON** then select **Continue**.
 
-    ![The select format screen is displayed with Json selected as the type.](media/ex5-task4-023.png "Select format form")
+    ![The select format screen is displayed with JSON selected as the type.](media/ex5-task4-023.png "Select format form")
 
 20. On the **Set properties** screen, name the dataset **InvoicesJson** then for the linked service field, choose the Azure Storage linked service **asastore{suffix}**.
 
@@ -1482,43 +1471,39 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The InvoiceProcessing tab is selected at the top of the workspace.](media/ex5-task4-039.png "The InvoiceProcessing pipeline tab")
 
-38. Select the data flow activity on the pipeline designer surface, then in the bottom pane, select the **Settings** tab.
-
-    ![The data flow activity Settings tab is displayed.](media/ex5-task4-040.png "The Settings tab")
-
-39. Under the **PolyBase** settings, set the **Staging linked service** to the **asastore{suffix}** linked service. Enter **invoices-staging** as the **Storage staging folder**.
+38. Ensure the data flow field is set to **NewInvoicesProcessing**, then expand the **Staging** section. Set the **Staging linked service** to the **asastore{suffix}** linked service. Enter **invoices-staging** as the **Storage staging folder**.
 
     ![The data flow activity Settings tab is displayed with its form populated as indicated above.](media/ex5-task4-041.png "The Settings tab")
 
-40. Select **Publish All** from the top toolbar.
+39. Select **Publish All** from the top toolbar.
 
-    ![The Publish All button is selected from the top toolbar.](media/ex5-task4-042.png "The Publish all button")
+    ![The Publish All button is selected from the top toolbar.](media/publishall_toolbarmenu.png "The Publish all button")
 
-41. Select **Publish**.
+40. Select **Publish**.
 
-42. Within a few moments, you should see a notification that Publishing completed.
+41. Within a few moments, you should see a notification that Publishing completed.
 
     ![The Publishing completed notification is shown.](media/ex5-task4-043.png "The Publishing Completed notification")
 
-43. From the left menu, select the **Monitor** hub, then ensure the **Pipeline runs** option is selected from the hub menu.
+42. From the left menu, select the **Monitor** hub, then ensure the **Pipeline runs** option is selected from the hub menu.
 
     ![The Monitor hub is selected from the left menu.](media/ex5-task4-044.png "The Monitor Hub menu option")
 
-44. In approximately 5 minutes, you should see the **InvoiceProcessing** pipeline begin processing. You may need to refresh this list to see it appear, a refresh button is located in the toolbar.
+43. In approximately 5 minutes, you should see the **InvoiceProcessing** pipeline begin processing. You may need to refresh this list to see it appear, a refresh button is located in the toolbar.
 
     ![On the Pipeline runs list, the InvoiceProcessing pipeline is shown as in-progress.](media/ex5-task4-045.png "The Pipeline runs list")
 
-45. After about 3 or 4 minutes it will complete. You may need to refresh the list to see the completed pipeline.
+44. After about 3 or 4 minutes it will complete. You may need to refresh the list to see the completed pipeline.
 
     ![The Pipeline runs list is displayed with the InvoiceProcessing pipeline shown as succeeded.](media/ex5-task4-046.png "The pipeline runs list")
 
-46. From the left menu, select the **Develop** hub, then expand the **+** button an choose **SQL Script**. Ensure the proper database is selected, then run the following query to verify the data from the two test invoices.
+45. From the left menu, select the **Develop** hub, then expand the **+** button an choose **SQL Script**. Ensure the proper database is selected, then run the following query to verify the data from the two test invoices.
 
     ```SQL
     SELECT * FROM wwi_mcw.Invoices
     ```
 
-    ![show the data in the databases](media/ex5-task4-047.png)
+    ![The tabular results of the previous query is shown.](media/ex5-task4-047.png "SQL Query results")
 
 ## Exercise 6: Security
 
@@ -1757,7 +1742,7 @@ Using Azure Synapse Analytics, data scientists are no longer required to use sep
 
 In this exercise, you will create multiple machine learning models. You will learn how to consume these models in your notebook. You will also deploy a model as a web service to Azure Container Instances and consume the service.
 
-### Task 1: Create a SQL Datastore and source Dataset
+### Task 1: Create a SQL Datastore and source Dataset: Portal
 
 1. Open the lab resource group, locate and open the **amlworkspace{{suffix}}** Machine Learning resource.
 
@@ -2294,7 +2279,7 @@ All logins to your data warehouse are logged to `sys.dm_pdw_exec_sessions`. This
 
 ### Task 1: Delete the resource group
 
-1. In the Azure Portal, open the resource group for this lab. Select **Delete** from the top toolbar menu.
+1. In the Azure Portal, open the resource group for this lab. Select **Delete** from the top toolbar menu. Repeat this process for the resource group created with the Azure Function deployment.
 
 2. In the Azure Portal, open the resource group with the same name as your Function App. Select **Delete** from the top toolbar menu.
 
