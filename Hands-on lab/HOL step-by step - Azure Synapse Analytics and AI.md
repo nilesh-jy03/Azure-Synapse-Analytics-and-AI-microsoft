@@ -61,7 +61,6 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 3: Dynamic data masking](#task-3-dynamic-data-masking)
   - [Exercise 7: Machine Learning](#exercise-7-machine-learning)
     - [Task 1: Create a SQL Datastore and source Dataset: Portal](#task-1-create-a-sql-datastore-and-source-dataset-portal)
-    - [Task 1: Create a SQL Datastore and source Dataset: CLI](#task-1-create-a-sql-datastore-and-source-dataset-cli)
     - [Task 2: Create compute infrastructure](#task-2-create-compute-infrastructure)
     - [Task 3: Use a notebook in AML Studio to prepare data and create a Product Seasonality Classifier model using XGBoost](#task-3-use-a-notebook-in-aml-studio-to-prepare-data-and-create-a-product-seasonality-classifier-model-using-xgboost)
     - [Task 4: Leverage Automated ML to create and deploy a Product Seasonality Classifier model](#task-4-leverage-automated-ml-to-create-and-deploy-a-product-seasonality-classifier-model)
@@ -1811,22 +1810,6 @@ In this exercise, you will create multiple machine learning models. You will lea
 
     ![The dataset Confirm details screen is displayed showing a summary of the choices from the previous steps.](media/aml_dataset_confirmdetails.png "The dataset Confirm details screen")
 
-### Task 1: Create a SQL Datastore and source Dataset: CLI
-
-1. Open Azure Cloud Shell. Ensure that a **PowerShell** terminal opens.
-
-2. Enter the following command into the command line. If asked to install the **azure-cli-ml** extension, accept. Substitute {{suffix}}, provide the SQL Admin password for {{Admin password}}, and provide your Azure subscription ID for {{Azure subscription ID}}. The output of a successful run can be located below.
-
-    ```PowerShell
-    az ml datastore attach-sqldb --database-name sqlpool01 --name sqlpool01 --server-name asaworkspace{{suffix}} --endpoint sql.azuresynapse.net --password {{Admin password}} --resource-group Synapse-MCW --resource-url sql.azuresynapse.net --subscription-id {{Azure subscription ID}} --username asa.sql.admin --workspace-name amlworkspace{{suffix}}
-    ```
-
-    ![Using Azure Cloud Shell to create an Azure ML datastore.](media/cli_create_ml_datastore.PNG "Successful CLI command output")
-
-    >Note: To locate your Azure subscription ID, simply navigate to your subscription. The ID will then be visible on the **Overview** blade.
-
-3. Continue from Step 6 of the Portal version of this task.
-
 ### Task 2: Create compute infrastructure
 
 1. From the left menu of Machine Learning Studio, select **Compute**.
@@ -2297,7 +2280,7 @@ All logins to your data warehouse are logged to `sys.dm_pdw_exec_sessions`. This
 
 ### Task 1: Delete the resource group
 
-1. In the Azure Portal, open the resource group for this lab. Select **Delete** from the top toolbar menu.
+1. In the Azure Portal, open the resource group for this lab. Select **Delete** from the top toolbar menu. Repeat this process for the resource group created with the Azure Function deployment.
 
 2. In the Azure Portal, open the resource group with the same name as your Function App. Select **Delete** from the top toolbar menu.
 
