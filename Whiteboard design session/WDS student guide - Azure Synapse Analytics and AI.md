@@ -172,6 +172,8 @@ Directions: With all participants at your table, respond to the following questi
 
 5. How will you ingest streaming data from the in-store IoT devices?
 
+6. WWI is interested in the concept of Microsoft Dataverse to leverage visual designers to quickly define tables, relationships, business rules, forms, and workflows. How could this data be leveraged in Azure Synapse Analytics?
+
 *Transform*
 
 1. Before building transformation pipelines or loading them into the data warehouse, how can WWI quickly explore the raw ingested data to understand its contents?
@@ -326,3 +328,6 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Sensitivity label insights about your data in Azure Purview | https://docs.microsoft.com/en-us/azure/purview/sensitivity-insights                                                                                                                                                                                                               |
 | Azure Purview | <https://azure.microsoft.com/en-us/services/purview/> |
 | Azure Purview - Map, Discover, and Find Insights Across Data Sources | <https://youtu.be/27bA4KFiEKk> |
+| Azure Synapse Link for Dataverse | <https://docs.microsoft.com/en-us/powerapps/maker/data-platform/export-to-data-lake> |
+| MCW Cosmos DB Real-Time Advanced Analytics (Synapse Link for Cosmos DB) | <https://github.com/Microsoft/MCW-Cosmos-DB-Real-Time-Advanced-Analytics> |
+| Query Delta Lake files using serverless SQL pool in Azure Synapse Analytics | <https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/query-delta-lake-format> |

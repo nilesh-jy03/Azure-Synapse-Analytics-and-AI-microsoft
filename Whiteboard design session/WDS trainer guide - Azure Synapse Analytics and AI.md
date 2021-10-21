@@ -200,6 +200,8 @@ They understand that using analytics on top of retail data has the potential to 
 
 They would like to combine their retail lifecycle data, including customer data, operations data, sourcing, and supplier data as well as transaction data with analytics to reduce churn, enhance loyalty, advance customer journeys, enable the ability to conduct contextual marketing, measure attribution and provide insights across their enterprise to drive growth across the organization holistically. However, WWI is worried that finding the correct data in a larger pool can be much more challenging after the unification.
 
+WWI routinely receives PDF invoices from suppliers for various parts they require in their operation. Currently they perform manual review and data entry of this data. They would like to automate keeping their part costs table updated.
+
 They are looking to use historical campaign and customer analytics data and make decisions for the present. Beyond these large historical data sets, they would like to use streaming tweet data from Twitter and telemetry from IoT sensors in their brick and mortar locations. In effect, they would like to use data from the present moment to inform decisions for the next moment. WWI sees an opportunity to use their data to predict the future, initially by making product recommendations.
 
 According to Peter Guerin, Chief Technical Officer (CTO), Wide World Importers has over five years of sales transaction data from Oracle, consisting of more than 30  billion rows. But that is not their only enterprise data source. They have finance data stored in SAP HANA, marketing data in Teradata, and social media data coming in from Twitter. They need a solution that allows them to discover, integrate, query, and analyze the data from all of these sources. They worry that their current catalog might be missing some internal data sets used by smaller departments. Additionally, regardless of the volume, they want to be able to execute queries across such data with results returning in seconds.
@@ -235,6 +237,8 @@ To bring their entire operation into perspective, Wide World Importers would lik
 10. Monitor the use of data across pipelines and reports.
 
 11. Create a solution that provides a consistent security model across all components.
+
+12. Automate the updating of parts prices based on incoming supplier invoices.
 
 ### Customer objections
 
@@ -297,6 +301,8 @@ Directions: With all participants at your table, respond to the following questi
 4. When it comes to ingesting raw data in batch from new data sources, what data formats could they support with your solution?
 
 5. How will you ingest streaming data from the in-store IoT devices?
+
+6. WWI is interested in the concept of Microsoft Dataverse to leverage visual designers to quickly define tables, relationships, business rules, forms, and workflows. How could this data be leveraged in Azure Synapse Analytics?
 
 *Transform*
 
@@ -452,7 +458,9 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Sensitivity label insights about your data in Azure Purview | <https://docs.microsoft.com/en-us/azure/purview/sensitivity-insights>                                                                                                                                                                                                               |
 | Azure Purview | <https://azure.microsoft.com/en-us/services/purview/> |
 | Azure Purview - Map, Discover, and Find Insights Across Data Sources | <https://youtu.be/27bA4KFiEKk> |
-
+| Azure Synapse Link for Dataverse | <https://docs.microsoft.com/en-us/powerapps/maker/data-platform/export-to-data-lake> |
+| MCW Cosmos DB Real-Time Advanced Analytics (Synapse Link for Cosmos DB) | <https://github.com/Microsoft/MCW-Cosmos-DB-Real-Time-Advanced-Analytics> |
+| Query Delta Lake files using serverless SQL pool in Azure Synapse Analytics | <https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/query-delta-lake-format> |
 
 # Azure Synapse Analytics and AI whiteboard design session trainer guide
 
@@ -516,9 +524,9 @@ The primary audience is the business decision makers and technology decision mak
 
     Azure Synapse SQL offers both serverless and provisioned resource models, offering consumption and billing options to fit the customer's needs. For predictable performance and cost, provision pools to reserve processing power for data stored in SQL tables. For ad hoc or bursty workloads, use the serverless, always-available SQL endpoint.
 
-    Azure Synapse SQL Pools and the Azure Synapse SQL serverless endpoint can be used to apply transformations using T-SQL, as can notebooks running in Azure Synapse Spark. A Synapse Pipeline is also commonly used at this stage to define a repeatable process for cleaning, joining, enriching and ultimately loading the data into the Azure Synapse SQL that functions as the serving database.
+    Azure Synapse SQL Pools and the serverless SQL pool can be used to apply transformations using T-SQL, as can notebooks running in Azure Synapse Spark. A Synapse Pipeline is also commonly used at this stage to define a repeatable process for cleaning, joining, enriching and ultimately loading the data into the Azure Synapse SQL that functions as the serving database.
 
-    The serving layer can consist of a dedicated Azure Synapse SQL Pool to provide pre-provisioned compute capacity to serve both data from the relational data warehouse or data sourced from the data lake. Additionally, the serving layer can use Azure Synapse SQL serverless to provide ad-hoc compute capacity for querying data stored in the data lake. Either of these serving options can be used by Power BI reports created within Azure Synapse Analytics, or by external applications. The important take away from this architecture is that all of the components shown are completely managed within Azure Synapse Analytics.
+    The serving layer can consist of a dedicated Azure Synapse SQL pool to provide pre-provisioned compute capacity to serve both data from the relational data warehouse or data sourced from the data lake. Additionally, the serving layer can use Azure serverless SQL pool to provide ad-hoc compute capacity for querying data stored in the data lake. Either of these serving options can be used by Power BI reports created within Azure Synapse Analytics, or by external applications. The important take away from this architecture is that all of the components shown are completely managed within Azure Synapse Analytics.
 
     Data governance is another challenge in large enterprise environments. On the one hand, business analysts need to discover and understand data assets that can help them solve business problems. On the other hand, Chief Data Officers want insights on the privacy and security of business data. WWI can use Azure Purview for data discovery and governance, insights into their data assets, data classification, and sensitivity covering the entire organizational data landscape. In addition, WWI can register all their data sources and set up regular scans to automatically catalog and update relevant metadata about data assets in the organization. Azure Purview can manage on-premises, multi-cloud, and software as a service (SaaS) data if required.
 
@@ -560,6 +568,10 @@ The primary audience is the business decision makers and technology decision mak
 
     They should collect messages in Event Hub or IoT Hub and process them with Stream Analytics.
 
+6. WWI is interested in the concept of Microsoft Dataverse to leverage visual designers to quickly define tables, relationships, business rules, forms, and workflows. How could this data be leveraged in Azure Synapse Analytics?
+
+    [Azure Synapse Link for Dataverse](https://docs.microsoft.com/en-us/powerapps/maker/data-platform/export-to-data-lake) provides continuous data export functionality between Dataverse and Azure Synapse Analytics and/or Azure Data Lake Storage Gen2. This includes the standard tables as well as custom tables (including create, update, and delete transactions).
+
 *Transform*
 
 1. Before building transformation pipelines or loading it into the data warehouse, how can WWI quickly explore the raw ingested data to understand its contents?
@@ -568,17 +580,17 @@ The primary audience is the business decision makers and technology decision mak
 
 2. When it comes to storing refined versions of the data for possible querying, what data format would you recommend they use? Why?
 
-    Parquet. There is industry alignment around the Parquet format for sharing data at the storage layer (e.g., across Hadoop, Databricks, and SQL engine scenarios). Parquet is a high-performance, column oriented format optimized for big data scenarios.
+    Parquet. There is industry alignment around the Parquet format for sharing data at the storage layer (e.g., across Hadoop, Databricks, and SQL engine scenarios). Parquet is a high-performance, column oriented format optimized for big data scenarios. Furthermore, both the serverless SQL pool in Azure Synapse Analytics and the Spark pools support Delta Lake ([serverless SQL pool support](https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/query-delta-lake-format), [Apache Spark pool support](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-delta-lake-overview)). It is important to note that at this time the serverless SQL pool can only read Delta Lake, any updates will need to be done using an Apache Spark pool.
 
 3. Regarding the service you recommend they use for preparing, merging and transforming the data, in which situations can they use the graphical designer and which situations would require code?
 
-    They could use Mapping Data Flows that they graphically design in Azure Synapse Studio. These code-free data flows provide for scalable execution. Data Flows define a domain specific language for transformation and convert that into code that runs on Spark, which runs at scale and provides elasticity for handling growing volumes of data.
+    They could use Mapping Data Flows that they graphically design in Azure Synapse Studio. These code-free data flows provide for scalable execution. Data Flows define a domain specific language for transformation and convert that into code that runs on Spark, which runs at scale and provides elasticity for handling growing volumes of data. By default a new Spark cluster is provisioned to service the data flow activity, this impacts the start-up time of the activity. If a pipeline contains multiple sequential data flows it is recommended to set the Time To Live (TTL) value and set the "Quick re-use" option to true in the Azure Integration Runtime settings under the Data Flow Properties. These settings will tell the service to not teardown the existing cluster after each activity and instead re-use the cluster thus avoiding the cold-start issue of provisioning a new cluster for each data flow activity as long as it is still within the TTL window (sliding window, the TTL resets after each execution of a Data Flow).
 
     They can use code when their data engineers prefer to use Spark to transform the data via DataFrames.
 
 4. Their data team is accustomed to leveraging open source packages that help them quickly pre-process the data, as well as enable their data scientists to train machine learning models using both Spark and Python. Explain how your solution would enable this.
 
-    Pre-processing of data can occur in Azure Synapse Analytics as it supports open source Apache Spark and the execution of Python, Scala and (in the near future) R code. Their data team would be able to use the familiar Jupyter notebooks and leverage their favorite libraries. Model training should be done with Azure Machine Learning Studio. Here notebooks can be executed to train the models, the models can be registered as well as deployed to Kubernetes or ACI.
+    Pre-processing of data can occur in Azure Synapse Analytics as it supports open source Apache Spark and the execution of Python, C#, and Scala code. Their data team would be able to use the familiar Jupyter notebooks and leverage their favorite libraries. Model training should be done with Azure Machine Learning Studio. Here notebooks can be executed to train the models, the models can be registered as well as deployed to Kubernetes or ACI.
 
 5. Does your solution allow their data engineers and data scientists to work within Jupyter notebooks? How are libraries managed?
 
@@ -674,7 +686,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 7. Some of their data contains columns in the JSON format, how could they flatten these hierarchical fields to a tabular structure?
 
-     They can use Azure Synapse SQL serverless along with the T-SQL OPENJSON, JSON_VALUE, and JSON_QUERY statements.
+     They can use serverless SQL pool in Azure Synapse Analytics along with the T-SQL OPENJSON, JSON_VALUE, and JSON_QUERY statements.
 
 8. What approach can they use to update the JSON data?
 
@@ -712,7 +724,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 3. With the product you recommend, do they need to load all the data into the data warehouse before they can create reports against it?
 
-    No, they only need to load the data into Azure Storage. Using Azure Synapse SQL serverless and Power BI they can create reports against the data directly.
+    No, they only need to load the data into Azure Storage. Using serverless SQL pool in Azure Synapse Analytics and Power BI they can create reports against the data lake directly, including leveraging Delta Lake format if it is being used.
 
 *Manage*
 
@@ -827,14 +839,14 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 4. WWI have heard of serverless querying, does Azure offer this? Does it support querying the data at the scale of WWI and what formats does it support? Would this be appropriate for supporting WWI dashboards or reports?
 
-   - Azure Synapse Analytics support serverless querying via the serverless SQL endpoint.
-   - Azure Synapse SQL serverless is an always available SQL endpoint that provides T-SQL querying over high scale data in Azure Storage, and is ideal for ad hoc or bursty workloads.
+   - Azure Synapse Analytics support serverless querying via the serverless SQL pool.
+   - serverless SQL pool in Azure Synapse Analytics is an always available SQL endpoint that provides T-SQL querying over high scale data in Azure Storage, and is ideal for ad hoc or bursty workloads.
    - Supports data in various formats (Parquet, CSV, JSON)
    - It would be appropriate for dashboards and reports, as it supports Power BI and can be used refresh dashboard datasets. It is also appropriate for basic data discovery and exploration and supporting "single query ETL" that  transforms Azure Storage based data in a massively parallel fashion.
 
 5. If Azure provides serverless querying, does selecting serverless remove the option of using pre-allocated query resources?
 
-   - No. This is a unique differentiator of Azure Synapse Analytics. Within one Azure Synapse Analytics workspace, they can have pre-provisioned Azure Synapse SQL Pools, and also have serverless querying using the Azure Synapse SQL serverless endpoint.
+   - No. This is a unique differentiator of Azure Synapse Analytics. Within one Azure Synapse Analytics workspace, they can have pre-provisioned Azure Synapse SQL Pools, and also have serverless querying using the serverless SQL pool in Azure Synapse Analytics.
 
 6. Having multiple data sources, pipelines and reports makes it hard to track what data goes where and is accessed by who. Is there a way to visualize a complete data supply chain from raw data to business insights?
 
