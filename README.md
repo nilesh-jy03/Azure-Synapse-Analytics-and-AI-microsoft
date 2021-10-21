@@ -1,12 +1,8 @@
-## Microsoft Cloud Workshops - Retirement Survey  
-
-As we look to streamline content and improve training, we are considering retiring the Microsoft Cloud Workshop (MCW) program. Please take a moment to fill out the [Microsoft Cloud Workshop Survey](https://forms.office.com/r/834zwtaNtK) and give us your feedback.
-
 # Azure Synapse Analytics and AI
 
 Wide World Importers (WWI) has hundreds of brick and mortar stores and an online store where they sell a variety of products. They would like to gain business insights using historical, real-time, and predictive analytics using structured and unstructured data sources. In doing so, they want to enable their IT team of data engineers and data scientists to bring in and run complex queries over petabytes of structured data with billions of rows and unstructured enterprise operational data. At the same time, they want to enable business analysts and their IT team to share a single source of truth and have a single workspace to collaborate and work with enterprise data and enriched customer data. They want to accomplish this minimizing the number of disparate services they use across ingest, transformation, querying and storage, so that their team of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management and monitoring.
 
-June 2021
+October 2021
 
 ## Target audience
 

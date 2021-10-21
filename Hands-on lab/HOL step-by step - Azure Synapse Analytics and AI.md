@@ -49,26 +49,26 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 4: Exploring raw text based data with Azure Synapse SQL Serverless](#exercise-4-exploring-raw-text-based-data-with-azure-synapse-sql-serverless)
     - [Task 1: Query CSV data](#task-1-query-csv-data)
     - [Task 2: Query JSON data](#task-2-query-json-data)
-  - [Exercise 5: Synapse Pipelines and Cognitive Search (Optional)](#exercise-5-synapse-pipelines-and-cognitive-search-optional)
-    - [Task 1: Create the invoice storage container](#task-1-create-the-invoice-storage-container)
-    - [Task 2: Create and train an Azure Forms Recognizer model and setup Cognitive Search](#task-2-create-and-train-an-azure-forms-recognizer-model-and-setup-cognitive-search)
-    - [Task 3: Configure a skillset with Form Recognizer](#task-3-configure-a-skillset-with-form-recognizer)
-    - [Task 4: Create the Synapse Pipeline](#task-4-create-the-synapse-pipeline)
-  - [Exercise 6: Security](#exercise-6-security)
+  - [Exercise 5: Security](#exercise-5-security)
     - [Task 1: Column level security](#task-1-column-level-security)
     - [Task 2: Row level security](#task-2-row-level-security)
     - [Task 3: Dynamic data masking](#task-3-dynamic-data-masking)
-  - [Exercise 7: Machine Learning](#exercise-7-machine-learning)
+  - [Exercise 6: Machine Learning](#exercise-6-machine-learning)
     - [Task 1: Create a SQL Datastore and source Dataset: Portal](#task-1-create-a-sql-datastore-and-source-dataset-portal)
     - [Task 2: Create compute infrastructure](#task-2-create-compute-infrastructure)
     - [Task 3: Use a notebook in AML Studio to prepare data and create a Product Seasonality Classifier model using XGBoost](#task-3-use-a-notebook-in-aml-studio-to-prepare-data-and-create-a-product-seasonality-classifier-model-using-xgboost)
     - [Task 4: Leverage Automated ML to create and deploy a Product Seasonality Classifier model](#task-4-leverage-automated-ml-to-create-and-deploy-a-product-seasonality-classifier-model)
-  - [Exercise 8: Monitoring](#exercise-8-monitoring)
+  - [Exercise 7: Monitoring](#exercise-7-monitoring)
     - [Task 1: Workload importance](#task-1-workload-importance)
     - [Task 2: Workload isolation](#task-2-workload-isolation)
     - [Task 3: Monitoring with Dynamic Management Views](#task-3-monitoring-with-dynamic-management-views)
     - [Task 4: Orchestration Monitoring with the Monitor Hub](#task-4-orchestration-monitoring-with-the-monitor-hub)
     - [Task 5: Monitoring SQL Requests with the Monitor Hub](#task-5-monitoring-sql-requests-with-the-monitor-hub)
+  - [Exercise 8: Synapse Pipelines and Cognitive Search (Optional)](#exercise-8-synapse-pipelines-and-cognitive-search-optional)
+    - [Task 1: Create the invoice storage container](#task-1-create-the-invoice-storage-container)
+    - [Task 2: Create and train an Azure Forms Recognizer model and setup Cognitive Search](#task-2-create-and-train-an-azure-forms-recognizer-model-and-setup-cognitive-search)
+    - [Task 3: Configure a skillset with Form Recognizer](#task-3-configure-a-skillset-with-form-recognizer)
+    - [Task 4: Create the Synapse Pipeline](#task-4-create-the-synapse-pipeline)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 <!-- /TOC -->
@@ -475,7 +475,7 @@ Over the past 5 years, Wide World Importers has amassed over 3 billion rows of s
 
     ![The top toolbar is displayed with the Publish all button highlighted.](media/publishall_toolbarmenu.png "Publishing changes")
 
-9.  Next, we will define a pipeline to populate data into the CustomerInfo table. From the left menu, select **Integrate**. From the Integrate blade, select the **+** button and select the **Pipeline** item.
+9. Next, we will define a pipeline to populate data into the CustomerInfo table. From the left menu, select **Integrate**. From the Integrate blade, select the **+** button and select the **Pipeline** item.
 
     ![The Integrate menu item is selected from the left menu. On the Integrate blade, the + button is expanded with the Pipeline item highlighted.](media/orchestrate_newpipelinemenu.png "The Integrate Hub")
 
@@ -1037,7 +1037,775 @@ A common format for exporting and storing data is with text based files. These c
 
    ![The top toolbar menu is displayed with the Discard all button highlighted.](media/toptoolbar_discardall.png "Discarding all changes")
 
-## Exercise 5: Synapse Pipelines and Cognitive Search (Optional)
+## Exercise 5: Security
+
+**Duration**: 30 minutes
+
+### Task 1: Column level security
+
+It is important to identify data columns of that hold sensitive information. Types of sensitive information could be social security numbers, email addresses, credit card numbers, financial totals, and more. Azure Synapse Analytics allows you define permissions that prevent users or roles select privileges on specific columns.
+
+1. Create a new SQL script by selecting **Develop** from the left menu, then in the **Develop** blade, expanding the **+** button and selecting **SQL script**.
+
+2. Copy and paste the following query into the query window. Then, step through each statement group by highlighting all queries between each comment block in the query window, and selecting **Run** from the query window toolbar menu. The query is documented inline. Ensure you are connected to **SQLPool01** when running the queries.
+
+    ```sql
+        /*  Column-level security feature in Azure Synapse simplifies the design and coding of security in applications.
+        It ensures column level security by restricting column access to protect sensitive data. */
+
+    /* Scenario: In this scenario we will be working with two users. The first one is the CEO, he has access to all
+        data. The second one is DataAnalystMiami, this user doesn't have access to the confidential Revenue column
+        in the CampaignAnalytics table. Follow this lab, one step at a time to see how Column-level security removes access to the
+        Revenue column to DataAnalystMiami */
+
+    --Step 1: Let us see how this feature in Azure Synapse works. Before that let us have a look at the Campaign Analytics table.
+    select  Top 100 * from wwi_mcw.CampaignAnalytics
+    where City is not null and state is not null
+
+    /*  Consider a scenario where there are two users.
+        A CEO, who is an authorized  personnel with access to all the information in the database
+        and a Data Analyst, to whom only required information should be presented.*/
+
+    -- Step:2 Verify the existence of the “CEO” and “DataAnalystMiami” users in the Datawarehouse.
+    SELECT Name as [User1] FROM sys.sysusers WHERE name = N'CEO';
+    SELECT Name as [User2] FROM sys.sysusers WHERE name = N'DataAnalystMiami';
+
+
+    -- Step:3 Now let us enforcing column level security for the DataAnalystMiami.
+    /*  The CampaignAnalytics table in the warehouse has information like ProductID, Analyst, CampaignName, Quantity, Region, State, City, RevenueTarget and Revenue.
+        The Revenue generated from every campaign is classified and should be hidden from DataAnalystMiami.
+    */
+
+    REVOKE SELECT ON wwi_mcw.CampaignAnalytics FROM DataAnalystMiami;
+    GRANT SELECT ON wwi_mcw.CampaignAnalytics([Analyst], [CampaignName], [Region], [State], [City], [RevenueTarget]) TO DataAnalystMiami;
+    -- This provides DataAnalystMiami access to all the columns of the Sale table but Revenue.
+
+    -- Step:4 Then, to check if the security has been enforced, we execute the following query with current User As 'DataAnalystMiami', this will result in an error
+    --  since DataAnalystMiami doesn't have select access to the Revenue column
+    EXECUTE AS USER ='DataAnalystMiami';
+    select TOP 100 * from wwi_mcw.CampaignAnalytics;
+    ---
+    -- The following query will succeed since we are not including the Revenue column in the query.
+    EXECUTE AS USER ='DataAnalystMiami';
+    select [Analyst],[CampaignName], [Region], [State], [City], [RevenueTarget] from wwi_mcw.CampaignAnalytics;
+
+    -- Step:5 Whereas, the CEO of the company should be authorized with all the information present in the warehouse.To do so, we execute the following query.
+    Revert;
+    GRANT SELECT ON wwi_mcw.CampaignAnalytics TO CEO;  --Full access to all columns.
+
+    -- Step:6 Let us check if our CEO user can see all the information that is present. Assign Current User As 'CEO' and the execute the query
+    EXECUTE AS USER ='CEO'
+    select * from wwi_mcw.CampaignAnalytics
+    Revert;
+    ```
+
+    ![The query tab toolbar is displayed with the Run button selected.](media/querytoolbar_run.png "Running a SQL Query")
+
+3. At the far right of the top toolbar, select the **Discard all** button as we will not be saving this query. When prompted, choose to **Discard changes**.
+
+   ![The top toolbar menu is displayed with the Discard all button highlighted.](media/toptoolbar_discardall.png "Discarding all changes")
+
+### Task 2: Row level security
+
+In many organizations it is important to filter certain rows of data by user. In the case of WWI, they wish to have data analysts only see their data. In the campaign analytics table, there is an Analyst column that indicates to which analyst that row of data belongs. In the past, organizations would create views for each analyst - this was a lot of work and unnecessary overhead. Using Azure Synapse Analytics, you can define row level security that compares the user executing the query to the Analyst column, filtering the data so they only see the data destined for them.
+
+1. Create a new SQL script by selecting **Develop** from the left menu, then in the **Develop** blade, expanding the **+** button and selecting **SQL script**.
+
+2. Copy and paste the following query into the query window. Then, step through each statement group by highlighting all queries between each comment block in the query window, and selecting **Run** from the query window toolbar menu. The query is documented inline.
+
+    ```sql
+    /* Row level Security (RLS) in Azure Synapse enables us to use group membership to control access to rows in a table.
+    Azure Synapse applies the access restriction every time the data access is attempted from any user.
+    Let see how we can implement row level security in Azure Synapse.*/
+
+    -- Row-Level Security (RLS), 1: Filter predicates
+    -- Step:1 The Sale table has two Analyst values: DataAnalystMiami and DataAnalystSanDiego.
+    --     Each analyst has jurisdiction across a specific Region. DataAnalystMiami on the South East Region
+    --      and DataAnalystSanDiego on the Far West region.
+    SELECT DISTINCT Analyst, Region FROM wwi_mcw.CampaignAnalytics order by Analyst ;
+
+    /* Scenario: WWI requires that an Analyst only see the data for their own data from their own region. The CEO should see ALL data.
+        In the Sale table, there is an Analyst column that we can use to filter data to a specific Analyst value. */
+
+    /* We will define this filter using what is called a Security Predicate. This is an inline table-valued function that allows
+        us to evaluate additional logic, in this case determining if the Analyst executing the query is the same as the Analyst
+        specified in the Analyst column in the row. The function returns 1 (will return the row) when a row in the Analyst column is the same as the user executing the query (@Analyst = USER_NAME()) or if the user executing the query is the CEO user (USER_NAME() = 'CEO')
+        whom has access to all data.
+    */
+
+    -- Review any existing security predicates in the database
+    SELECT * FROM sys.security_predicates
+
+    --Step:2 Create a new Schema to hold the security predicate, then define the predicate function. It returns 1 (or True) when
+    --  a row should be returned in the parent query.
+    GO
+    CREATE SCHEMA Security
+    GO
+    CREATE FUNCTION Security.fn_securitypredicate(@Analyst AS sysname)  
+        RETURNS TABLE  
+    WITH SCHEMABINDING  
+    AS  
+        RETURN SELECT 1 AS fn_securitypredicate_result
+        WHERE @Analyst = USER_NAME() OR USER_NAME() = 'CEO'
+    GO
+    -- Now we define security policy that adds the filter predicate to the Sale table. This will filter rows based on their login name.
+    CREATE SECURITY POLICY SalesFilter  
+    ADD FILTER PREDICATE Security.fn_securitypredicate(Analyst)
+    ON wwi_mcw.CampaignAnalytics
+    WITH (STATE = ON);
+
+    ------ Allow SELECT permissions to the Sale Table.------
+    GRANT SELECT ON wwi_mcw.CampaignAnalytics TO CEO, DataAnalystMiami, DataAnalystSanDiego;
+
+    -- Step:3 Let us now test the filtering predicate, by selecting data from the Sale table as 'DataAnalystMiami' user.
+    EXECUTE AS USER = 'DataAnalystMiami'
+    SELECT * FROM wwi_mcw.CampaignAnalytics;
+    revert;
+    -- As we can see, the query has returned rows here Login name is DataAnalystMiami
+
+    -- Step:4 Let us test the same for  'DataAnalystSanDiego' user.
+    EXECUTE AS USER = 'DataAnalystSanDiego';
+    SELECT * FROM wwi_mcw.CampaignAnalytics;
+    revert;
+    -- RLS is working indeed.
+
+    -- Step:5 The CEO should be able to see all rows in the table.
+    EXECUTE AS USER = 'CEO';  
+    SELECT * FROM wwi_mcw.CampaignAnalytics;
+    revert;
+    -- And he can.
+
+    --Step:6 To disable the security policy we just created above, we execute the following.
+    ALTER SECURITY POLICY SalesFilter  
+    WITH (STATE = OFF);
+
+    DROP SECURITY POLICY SalesFilter;
+    DROP FUNCTION Security.fn_securitypredicate;
+    DROP SCHEMA Security;
+    ```
+
+    ![The query tab toolbar is displayed with the Run button selected.](media/querytoolbar_run.png "Running a query")
+
+3. At the far right of the top toolbar, select the **Discard all** button as we will not be saving this query. When prompted, choose to **Discard changes**.
+
+   ![The top toolbar menu is displayed with the Discard all button highlighted.](media/toptoolbar_discardall.png "Discarding all changes")
+
+### Task 3: Dynamic data masking
+
+As an alternative to column level security, SQL Administrators also have the option of masking sensitive data. This will result in data being obfuscated when returned in queries. The data is still stored in a pristine state in the table itself. SQL Administrators can grant unmask privileges to users that have permissions to see this data.
+
+1. Create a new SQL script by selecting **Develop** from the left menu, then in the **Develop** blade, expanding the **+** button and selecting **SQL script**.
+
+2. Copy and paste the following query into the query window. Then, step through each statement group by highlighting all queries between each comment block in the query window, and selecting **Run** from the query window toolbar menu. The query is documented inline.
+
+    ```sql
+    ----- Dynamic Data Masking (DDM) ---------
+    /*  Dynamic data masking helps prevent unauthorized access to sensitive data by enabling customers
+        to designate how much of the sensitive data to reveal with minimal impact on the application layer.
+        Let see how */
+
+    /* Scenario: WWI has identified sensitive information in the CustomerInfo table. They would like us to
+        obfuscate the CreditCard and Email columns of the CustomerInfo table to DataAnalysts */
+
+    -- Step:1 Let's first get a view of CustomerInfo table.
+    SELECT TOP (100) * FROM wwi_mcw.CustomerInfo;
+
+    -- Step:2 Let's confirm that there are no Dynamic Data Masking (DDM) applied on columns.
+    SELECT c.name, tbl.name as table_name, c.is_masked, c.masking_function  
+    FROM sys.masked_columns AS c  
+    JOIN sys.tables AS tbl
+        ON c.[object_id] = tbl.[object_id]  
+    WHERE is_masked = 1
+        AND tbl.name = 'CustomerInfo';
+    -- No results returned verify that no data masking has been done yet.
+
+    -- Step:3 Now let's mask 'CreditCard' and 'Email' Column of 'CustomerInfo' table.
+    ALTER TABLE wwi_mcw.CustomerInfo  
+    ALTER COLUMN [CreditCard] ADD MASKED WITH (FUNCTION = 'partial(0,"XXXX-XXXX-XXXX-",4)');
+    GO
+    ALTER TABLE wwi_mcw.CustomerInfo
+    ALTER COLUMN Email ADD MASKED WITH (FUNCTION = 'email()');
+    GO
+    -- The columns are successfully masked.
+
+    -- Step:4 Let's see Dynamic Data Masking (DDM) applied on the two columns.
+    SELECT c.name, tbl.name as table_name, c.is_masked, c.masking_function  
+    FROM sys.masked_columns AS c  
+    JOIN sys.tables AS tbl
+        ON c.[object_id] = tbl.[object_id]  
+    WHERE is_masked = 1
+        AND tbl.name ='CustomerInfo';
+
+    -- Step:5 Now, let's grant SELECT permission to 'DataAnalystMiami' on the 'CustomerInfo' table.
+   GRANT SELECT ON wwi_mcw.CustomerInfo TO DataAnalystMiami;  
+
+    -- Step:6 Logged in as  'DataAnalystMiami' let's execute the select query and view the result.
+    EXECUTE AS USER = 'DataAnalystMiami';  
+    SELECT * FROM wwi_mcw.CustomerInfo;
+
+    -- Step:7 Let's remove the data masking using UNMASK permission
+    GRANT UNMASK TO DataAnalystMiami;
+    EXECUTE AS USER = 'DataAnalystMiami';  
+    SELECT *
+    FROM wwi_mcw.CustomerInfo;
+    revert;
+    REVOKE UNMASK TO DataAnalystMiami;  
+
+    ----step:8 Reverting all the changes back to as it was.
+    ALTER TABLE wwi_mcw.CustomerInfo
+    ALTER COLUMN CreditCard DROP MASKED;
+    GO
+    ALTER TABLE wwi_mcw.CustomerInfo
+    ALTER COLUMN Email DROP MASKED;
+    GO
+    ```
+
+    ![The query tab toolbar is displayed with the Run button selected.](media/querytoolbar_run.png "Running a query")
+
+3. At the far right of the top toolbar, select the **Discard all** button as we will not be saving this query. When prompted, choose to **Discard changes**.
+
+   ![The top toolbar menu is displayed with the Discard all button highlighted.](media/toptoolbar_discardall.png "Discarding all changes")
+
+## Exercise 6: Machine Learning
+
+**Duration**: 60 minutes
+
+Using Azure Synapse Analytics, data scientists are no longer required to use separate tooling to create and deploy machine learning models.
+
+In this exercise, you will create multiple machine learning models. You will learn how to consume these models in your notebook. You will also deploy a model as a web service to Azure Container Instances and consume the service.
+
+### Task 1: Create a SQL Datastore and source Dataset: Portal
+
+1. Open the lab resource group, locate and open the **amlworkspace{{suffix}}** Machine Learning resource.
+
+    ![The lab resource group is shown with the Machine Learning resource selected](media/resourcelist_amlstudio.png "Machine learning resource")
+
+2. On the **Overview** screen of the Machine Learning resource, select the **Studio web URL** link.
+
+    ![The machine learning resource overview screen is selected with the Studio web URL link highlighted.](media/machinelearning_overview.png "Machine learning overview screen")
+
+3. From the left menu of **Azure Machine Learning Studio**, select the **Datastores** item.
+
+    ![The Machine Learning Studio menu is shown with the Datastores item highlighted](media/amlstudio_datastores_menu.png "AML Studio menu")
+
+4. On the **Datastores** screen top menu, select **+ New datastore**.
+
+5. On the **New datastore** blade, configure it as follows and select **Create**:
+
+    | Field | Value |
+    |--------------|---------------|
+    | New datastore (name) | sqlpool01 |
+    | Datastore type | Azure SQL database |
+    | Account selection method | From Azure subscription |
+    | Subscription ID | Select the lab subscription. |
+    | Server name / database name  | Select asaworkspace{{suffix}}/SQLPool01. |
+    | Authentication type | SQL authentication |
+    | User ID | asa.sql.admin |
+    | Password | The SQL Admin password you chose when deploying the lab resources. |
+
+    ![The new datastore blade is shown populated with the preceding values.](media/amlstudio_sqlpooldatasource.png "New datastore blade")
+
+6. From the left menu, select **Datasets**, and with the **Registered datasets** tab selected, expand the **+ Create dataset** button and select **From datastore**.
+
+    ![The Datasets screen is displayed with the +Create dataset button highlighted.](media/createfirstamldataset.png "AML Studio Datasets screen")
+
+7. In the **Create dataset from datastore** Basic info form, name the dataset **AggregatedProductSeasonality** and select **Next**.
+
+    ![The basic info form is displayed populated with the preceding values.](media/createdataset_basicinfo.png "Dataset basic info form")
+
+8. On the **Datastore selection** form, select **Previously created datasource**, choose **sqlpool01** from the list and select the **Select datastore** button.
+
+    ![The Datastore selection form is displayed as described above.](media/amldatasetselectdatasource.png "The Datastore selection form")
+
+9. In the next **Datastore selection** form, enter the following **SQL query**. Then expand the **Advanced settings** and enter **100** for the **Query timeout (seconds)** value. Select **Next**:
+
+    ```sql
+    SELECT P.ProductId,P.Seasonality,S.TransactionDateId,COUNT(*) as TransactionItemsCount
+    FROM wwi_mcw.SaleSmall S
+    JOIN wwi_mcw.Product P ON S.ProductId = P.ProductId
+    where TransactionDateId between 20190101 and 20191231
+    GROUP BY P.ProductId ,P.Seasonality,S.TransactionDateId
+    ```
+
+    ![The datastore selection form is displayed populated with the preceding query.](media/aml_dataset_datastoreselectionquery.png "Dataset query details")
+
+10. The **Settings and preview** data table will be displayed after a few moments. Review this data, then select the **Next** button.
+
+    ![The settings and preview screen is displayed showing a table of data.](media/amlstudio_dataset_settingsandpreview.png "The Settings and Preview screen")
+
+11. Review the **Schema** field listing, then select **Next**.
+
+    ![The Schema screen is displayed showing a listing of columns and their types.](media/amlstudio_dataset_schema.png "The dataset Schema field listing")
+
+12. On the **Confirm details** screen, select **Create**.
+
+    ![The dataset Confirm details screen is displayed showing a summary of the choices from the previous steps.](media/aml_dataset_confirmdetails.png "The dataset Confirm details screen")
+
+### Task 2: Create compute infrastructure
+
+1. From the left menu of Machine Learning Studio, select **Compute**.
+
+2. On the **Compute** screen with the **Compute instances** tab selected. Choose the **Create** button.
+
+    ![The Azure Machine Learning Studio compute screen is displayed, with the compute instances tab selected, and the Create button highlighted.](media/aml_createcomputebutton.png "Azure Machine Learning Compute screen")
+
+3. On the **Create compute instance**, **Select virtual machine** form, configure it as follows, then select **Next**:
+
+    | Field | Value |
+    |--------------|---------------|
+    | Virtual machine type | CPU |
+    | Virtual machine size | Search for and select Standard_DS3_v2. |
+
+    ![The new compute instance virtual machine form is displayed populated with the preceding values.](media/aml_newcomputeform.png "The new compute instance virtual machine form")
+
+4. On the **Configure Settings** form, enter a globally unique **Compute name** of your choice, and select **Create**.
+
+    ![The new compute instance settings form is displayed populated with a compute name](media/aml_newcomputeform_settings.png "The new compute instance settings form")
+
+5. Select the **Compute clusters** tab, and select **Create**.
+
+6. On the **New compute cluster**, **Select virtual machine** form, configure the virtual machine as follows, then select **Next**:
+
+    | Field | Value |
+    |--------------|---------------|
+    | Virtual machine priority | Dedicated |
+    | Virtual machine type | CPU |
+    | Virtual machine size | Search for and select Standard_DS3_v2. |
+
+    ![The New compute cluster virtual machine form is displayed with the preceding values.](media/aml_cluster_settings.png "The New compute cluster virtual machine form")
+
+7. On the **Configure Settings** form, configure it as follows, then select **Create**:
+
+    | Field | Value |
+    |--------------|---------------|
+    | Compute name | automlcluster |
+    | Minimum number of nodes | 0 |
+    | Maximum number of nodes | 3 |
+    | Idle seconds before scale down | 120 |
+
+    ![The new compute cluster configure settings form is displayed populated with the preceding values.](media/aml_cluster_configsettings.png "The new compute cluster Configure settings form")
+
+### Task 3: Use a notebook in AML Studio to prepare data and create a Product Seasonality Classifier model using XGBoost
+
+1. In Azure Machine Learning (AML) Studio, select **Notebooks** from the left menu.
+
+2. In the **Notebooks** pane, select the **Upload** icon from the toolbar.
+
+    ![In Azure Machine Learning Studio, the Notebooks item is selected from the left menu, and the Upload Icon is highlighted in the Notebooks panel.](media/aml_uploadnotebook_menu.png "Upload notebook")
+
+3. In the **Open** dialog, select **Hands-on lab/artifacts/ProductSeasonality_sklearn.ipynb**. When prompted, check the boxes to **Overwrite if already exists** and **I trust contents of this file** and select **Upload**.
+
+    ![A dialog is displayed with the Overwrite if already exists and the I trust contents of this file checkboxes checked.](media/aml_notebook_uploadwarning.png "File upload warning dialog")
+
+4. In the top toolbar of the notebook, expand the **Editors** item, and select **Edit in Jupyter**.
+
+    ![On the notebook toolbar, the Editors item is expanded with the Edit in Jupyter item selected.](media/aml_notebook_editinjupyter.png "Edit in Jupyter")
+
+5. Review and run each cell in the notebook individually to gain understanding of the functionality being demonstrated.
+
+>**Note**: Running this notebook in its entirety is required for the next task.
+
+### Task 4: Leverage Automated ML to create and deploy a Product Seasonality Classifier model
+
+1. In Azure Machine Learning (AML) Studio, select **Experiments** from the left menu, then expand the **+ Create** button, and select **Automated ML run**.
+
+    ![The AML Studio Experiments screen is shown with the Create button expanded and the Automated ML run item selected.](media/aml_experiment_create.png "The AML Studio Experiments screen")
+
+2. In the previous task, we registered our PCA dataframe (named **pcadata**) to use with Auto ML. Select **pcadata** from the list and select **Next**.
+
+    ![On the Select dataset screen, the pcadata item is selected from the dataset list.](media/aml_automl_datasetselection.png "The select dataset form is displayed")
+
+3. On the **Configure run** screen, select the **Create a new compute** link beneath the **Select compute cluster** field.
+
+4. Back on the **Configure run** form, name the experiment **ProductSeasonalityClassifier**, select **Seasonality** as the **Target column** and select **automlcluster** as the compute cluster. Select **Next**.
+
+    ![The Configure run form is displayed populated with the preceding values.](media/automl_experiment_configurerun.png "The Configure run form")
+
+5. On the **Select task type** screen, select **Classification**, then choose **Finish**.
+
+    ![The Select task type screen is displayed with the Classification item selected.](media/aml_automlrun_tasktypeform.png "The Select task type screen")
+
+6. The experiment will then be run. It will take approximately 20-25 minutes for it to complete. Once it has completed, it will display the run results details. In the **Best model summary** box, select the **Algorithm name** link.
+
+    ![The Run is shown as completed and the link below Algorithm name in the Best model summary box is selected.](media/aml_automl_run_bestmodel_details.png "Completed AutoML run details")
+
+7. On the Model run screen, select **Deploy** from the top toolbar.
+
+    ![The specific model run screen is shown with the Deploy button selected from the top toolbar.](media/aml_automl_deploybestmodel.png "The best model run")
+
+8. On the **Deploy a model** blade, configure the deployment as follows, then select **Deploy**:
+
+    | Field | Value |
+    |--------------|---------------|
+    | Name | productseasonalityclassifier |
+    | Description | Product Seasonality Classifier. |
+    | Compute type | Azure Container Instance |
+    | Enable authentication | Off |
+
+    ![The Deploy a model blade is shown populated with the preceding values.](media/aml_automl_deploymodelaci.png "The Deploy a model blade")
+
+9. Once deployed, the Model summary will be displayed. You can view the endpoint by selecting the **Deploy status** link.
+
+    ![The successful model deployment was successful and the Deploy status link is highlighted.](media/aml_automl_modeldeploysuccess.png "The Model summary screen")
+
+10. Review the details of the deployed model service endpoint.
+
+    ![The service endpoint details screen is displayed.](media/aml_automl_modelserviceendpointdetails.png "The service endpoint details screen")
+
+## Exercise 7: Monitoring
+
+**Duration**: 45 minutes
+
+Azure Synapse Analytics provides a rich monitoring experience within the Azure portal to surface insights regarding your data warehouse workload.
+
+You can monitor active SQL requests using the SQL requests area of the Monitor Hub. This includes details like the pool, submitter, duration, queued duration, workload group assigned, importance, and the request content.
+
+Pipeline runs can be monitored using the Monitor Hub and selecting Pipeline runs. Here you can filter pipeline runs and drill in to view the activity runs associated with the pipeline run and monitor the running of in-progress pipelines.
+
+### Task 1: Workload importance
+
+Running mixed workloads can pose resource challenges on busy systems. Solution architects seek ways to separate classic data warehousing activities (such as loading, transforming, and querying data) to ensure that enough resources exist to hit SLAs.
+
+Synapse SQL pool workload management in Azure Synapse consists of three high-level concepts: workload classification, workload importance and workload isolation. These capabilities give you more control over how your workload utilizes system resources.
+
+Workload importance influences the order in which a request gets access to resources. On a busy system, a request with higher importance has first access to resources. Importance can also ensure ordered access to locks.
+
+Setting importance in Synapse SQL for Azure Synapse allows you to influence the scheduling of queries. Queries with higher importance will be scheduled to run before queries with lower importance. To assign importance to queries, you need to create a workload classifier.
+
+1. Navigate to the **Develop** hub.
+
+    ![The Develop menu item is highlighted.](media/develop-hub.png "Develop hub")
+
+2. From the **Develop** menu, select the + button and choose **SQL Script** from the context menu.
+
+    ![The SQL script context menu item is highlighted.](media/synapse-studio-new-sql-script.png "New SQL script")
+
+3. In the toolbar menu, connect to the **SQL Pool** database to execute the query.
+
+    ![The connect to option is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-connect.png "Query toolbar")
+
+4. In the query window, replace the script with the following to confirm that there are no queries currently being run by users logged in as `asa.sql.workload01`, representing the CEO of the organization or `asa.sql.workload02` representing the data analyst working on the project:
+
+    ```sql
+    --First, let's confirm that there are no queries currently being run by users logged in as CEONYC or AnalystNYC.
+
+    SELECT s.login_name, r.[Status], r.Importance, submit_time,
+    start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
+    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
+    WHERE s.login_name IN ('asa.sql.workload01','asa.sql.workload02') and Importance
+    is not NULL AND r.[status] in ('Running','Suspended')
+    --and submit_time>dateadd(minute,-2,getdate())
+    ORDER BY submit_time ,s.login_name
+    ```
+
+5. Select **Run** from the toolbar menu to execute the SQL command.
+
+    ![The run button is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-run.png "Run")
+
+6. Next, you will flood the system with queries and see what happens for `asa.sql.workload01` and `asa.sql.workload02`. To do this, we'll run a Azure Synapse Pipeline that executes a large number of queries.
+
+7. Select the `Integrate` item from the left menu.
+
+8. **Run** the **Exercise 8 - ExecuteDataAnalystandCEOQueries** Pipeline, which will run the `asa.sql.workload01` and `asa.sql.workload02` queries. You can run the pipeline with the Debug option if you have an instance of the Integration Runtime running.
+
+9. Select **Add trigger**, then **Trigger now**. In the dialog that appears, select **OK**. **Let this pipeline run for 30 seconds to 1 minute, then proceed to the next step**.
+
+    ![The add trigger and trigger now menu items are highlighted.](media/trigger-data-analyst-and-ceo-queries-pipeline.png "Add trigger")
+
+10. From the left menu, select the **Monitor** hub. Hover over the link of the in-progress pipeline, and select the **Cancel recursive** icon that displays.
+
+    ![The Monitor Hub icon is selected from the left menu, and the Cancel recursive button is selected on the in progress pipeline.](media/cancel_running_pipeline_monitor_hub.png)
+
+11. From the left menu, select the **Develop** hub and return to your SQL script. Let's see what happened to all the queries that flooded the system. In the query window, replace the script with the following:
+
+    ```sql
+    SELECT s.login_name, r.[Status], r.Importance, submit_time, start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
+    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
+    WHERE s.login_name IN ('asa.sql.workload01','asa.sql.workload02') and Importance
+    is not NULL AND r.[status] in ('Running','Suspended') and submit_time>dateadd(minute,-4,getdate())
+    ORDER BY submit_time ,status
+    ```
+
+12. Select **Run** from the toolbar menu to execute the SQL command. You should see an output similar to the following:
+
+    ![SQL query results.](media/sql-query-2-results.png "SQL script")
+
+13. Intermittently perform the preceding query until all queries have been run and no results are returned.
+
+14. We will give our `asa.sql.workload01` user queries priority by implementing the **workload importance** feature. In the query window, replace the script with the following:
+
+    ```sql
+    IF EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE name = 'CEO')
+    BEGIN
+        DROP WORKLOAD CLASSIFIER CEO;
+    END
+    CREATE WORKLOAD CLASSIFIER CEO
+      WITH (WORKLOAD_GROUP = 'largerc'
+      ,MEMBERNAME = 'asa.sql.workload01',IMPORTANCE = High);
+    ```
+
+15. Select **Run** from the toolbar menu to execute the SQL command.
+
+16. Let's flood the system again with queries and see what happens this time for `asa.sql.workload01` and `asa.sql.workload02` queries. To do this, we'll run an Azure Synapse Pipeline that runs a large number queries. **Similar to before, run this pipeline for about 30 seconds to 1 minute**.
+
+    - **Select** the `Integrate` item from the left menu.
+
+    - **Run** the **Exercise 8 - ExecuteDataAnalystandCEOQueries** Pipeline, which will run the `asa.sql.workload01` and `asa.sql.workload02` queries.
+
+17. In the query window, replace the script with the following to see what happens to the `asa.sql.workload01` queries this time:
+
+    ```sql
+    SELECT s.login_name, r.[Status], r.Importance, submit_time, start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
+    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
+    WHERE s.login_name IN ('asa.sql.workload01','asa.sql.workload02') and Importance
+    is not NULL AND r.[status] in ('Running','Suspended') and submit_time>dateadd(minute,-2,getdate())
+    ORDER BY submit_time ,status desc
+    ```
+
+18. Select **Run** from the toolbar menu to execute the SQL command. You should see an output similar to the following that shows query executions for the `asa.sql.workload01` user having a **high** importance. Also note that the 'asa.sql.workload02' queries are in **Suspended** status while the high priority queries are being run.
+
+    ![SQL query results showing asa.sql.workload01 queries with a higher importance than those queries from asa.sql.workload02.](media/sql-query-4-results.png "SQL script")
+
+### Task 2: Workload isolation
+
+Workload isolation means resources are reserved, exclusively, for a workload group. Workload groups are containers for a set of requests and are the basis for how workload management, including workload isolation, is configured on a system. A simple workload management configuration can manage data loads and user queries.
+
+In the absence of workload isolation, requests operate in the shared pool of resources. Access to resources in the shared pool is not guaranteed and is assigned on an importance basis.
+
+Configuring workload isolation should be done with caution as the resources are allocated to the workload group even if there are no active requests in the workload group. Over-configuring isolation can lead to diminished overall system utilization.
+
+Users should avoid a workload management solution that configures 100% workload isolation: 100% isolation is achieved when the sum of `min_percentage_resource` configured across all workload groups equals 100%. This type of configuration is overly restrictive and rigid, leaving little room for resource requests that are accidentally misclassified. There is a provision to allow one request to execute from workload groups not configured for isolation.
+
+1. Navigate to the **Develop** hub.
+
+    ![The Develop menu item is highlighted.](media/develop-hub.png "Develop hub")
+
+2. From the **Develop** menu, select the + button and choose **SQL Script** from the context menu.
+
+    ![The SQL script context menu item is highlighted.](media/synapse-studio-new-sql-script.png "New SQL script")
+
+3. In the toolbar menu, connect to the **SQL Pool** database to execute the query.
+
+    ![The connect to option is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-connect.png "Query toolbar")
+
+4. In the query window, replace the script with the following:
+
+    ```sql
+    IF NOT EXISTS (SELECT * FROM sys.workload_management_workload_groups where name = 'CEODemo')
+    BEGIN
+        Create WORKLOAD GROUP CEODemo WITH  
+        ( MIN_PERCENTAGE_RESOURCE = 50        -- integer value
+        ,REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25 --  
+        ,CAP_PERCENTAGE_RESOURCE = 100
+        )
+    END
+    ```
+
+    The code creates a workload group called `CEODemo` that reserves resources exclusively for the workload group. In this example, a workload group with a `MIN_PERCENTAGE_RESOURCE` set to 50% and `REQUEST_MIN_RESOURCE_GRANT_PERCENT` set to 25% is guaranteed 2 concurrent queries.
+
+5. Select **Run** from the toolbar menu to execute the SQL command.
+
+6. In the query window, replace the script with the following to create a workload Classifier called `CEODreamDemo` that assigns a workload group and importance to incoming requests:
+
+    ```sql
+    IF NOT EXISTS (SELECT * FROM sys.workload_management_workload_classifiers where  name = 'CEODreamDemo')
+    BEGIN
+        Create Workload Classifier CEODreamDemo with
+        ( Workload_Group ='CEODemo',MemberName='asa.sql.workload02',IMPORTANCE = BELOW_NORMAL);
+    END
+    ```
+
+7. Select **Run** from the toolbar menu to execute the SQL command.
+
+8. In the query window, replace the script with the following to confirm that there are no active queries being run by `asa.sql.workload02`:
+
+    ```sql
+    SELECT s.login_name, r.[Status], r.Importance, submit_time,
+    start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
+    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
+    WHERE s.login_name IN ('asa.sql.workload02') and Importance
+    is not NULL AND r.[status] in ('Running','Suspended')
+    ORDER BY submit_time, status
+    ```
+
+9. Let's flood the system with queries and see what happens for `asa.sql.workload02`. To do this, we will run an Azure Synapse Pipeline that runs a large number of queries. Select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline, which will run the  `asa.sql.workload02` queries. **Let this pipeline run for 30 seconds to 1 minute, then cancel the run recursively**.
+
+10. In the query window, replace the script with the following to see what happened to all the `asa.sql.workload02` queries that were flooded into the system:
+
+    ```sql
+    SELECT s.login_name, r.[Status], r.Importance, submit_time,
+    start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
+    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
+    WHERE s.login_name IN ('asa.sql.workload02') and Importance
+    is not NULL AND r.[status] in ('Running','Suspended')
+    ORDER BY submit_time, status
+    ```
+
+11. Select **Run** from the toolbar menu to execute the SQL command. You should see an output similar to the following that shows the importance for each session set to `below_normal` and two queries being run in parallel:
+
+    ![The script results show that each session was executed with below normal importance with two queries being run in parallel.](media/sql-result-below-normal.png "SQL script")
+
+12. In the query window, replace the script with the following to set 3.25% minimum resources per request:
+
+    ```sql
+    IF  EXISTS (SELECT * FROM sys.workload_management_workload_classifiers where group_name = 'CEODemo')
+    BEGIN
+        Drop Workload Classifier CEODreamDemo
+        DROP WORKLOAD GROUP CEODemo
+        --- Creates a workload group 'CEODemo'.
+            Create  WORKLOAD GROUP CEODemo WITH  
+        (MIN_PERCENTAGE_RESOURCE = 26 -- integer value
+            ,REQUEST_MIN_RESOURCE_GRANT_PERCENT = 3.25 -- factor of 26 (guaranteed more than 4 concurrencies)
+        ,CAP_PERCENTAGE_RESOURCE = 100
+        )
+        --- Creates a workload Classifier 'CEODreamDemo'.
+        Create Workload Classifier CEODreamDemo with
+        (Workload_Group ='CEODemo',MemberName='asa.sql.workload02',IMPORTANCE = BELOW_NORMAL);
+    END
+    ```
+
+    > **Note**: Configuring workload containment implicitly defines a maximum level of concurrency. With a CAP_PERCENTAGE_RESOURCE set to 60% and a REQUEST_MIN_RESOURCE_GRANT_PERCENT set to 1%, up to a 60-concurrency level is allowed for the workload group. Consider the method included below for determining the maximum concurrency:
+    >
+    > [Max Concurrency] = [CAP_PERCENTAGE_RESOURCE] / [REQUEST_MIN_RESOURCE_GRANT_PERCENT]
+
+13. Let's flood the system again and see what happens for `asa.sql.workload02`. To do this, we will run an Azure Synapse Pipeline that runs a large number of queries. Select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline, which will run the `asa.sql.workload02` queries.
+
+14. In the query window, replace the script with the following to see what happened to all of the `asa.sql.workload02` queries that flooded the system, note that many more queries are now being performed in parallel for asa.sql.workload02:
+
+    ```sql
+    SELECT s.login_name, r.[Status], r.Importance, submit_time,
+    start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
+    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
+    WHERE s.login_name IN ('asa.sql.workload02') and Importance
+    is  not NULL AND r.[status] in ('Running','Suspended')
+    ORDER BY submit_time, status
+    ```
+
+15. Select **Run** from the toolbar menu to execute the SQL command.
+
+  ![The SQL results pane is shown with multiple queries being run in parallel.](media/multiple_parallel_queries_workload02.png "More than 2 queries being run in parallel")
+
+### Task 3: Monitoring with Dynamic Management Views
+
+For a programmatic experience when monitoring SQL Analytics via T-SQL, the service provides a set of Dynamic Management Views (DMVs). These views are useful when actively troubleshooting and identifying performance bottlenecks with your workload.
+
+All logins to your data warehouse are logged to `sys.dm_pdw_exec_sessions`. This DMV contains the last 10,000 logins. The `session_id` is the primary key and is assigned sequentially for each new logon.
+
+1. Navigate to the **Develop** hub.
+
+    ![The Develop menu item is highlighted.](media/develop-hub.png "Develop hub")
+
+2. From the **Develop** menu, select the + button and choose **SQL Script** from the context menu.
+
+    ![The SQL script context menu item is highlighted.](media/synapse-studio-new-sql-script.png "New SQL script")
+
+3. In the toolbar menu, connect to the **SQL Pool** database to execute the query.
+
+    ![The connect to option is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-connect.png "Query toolbar")
+
+4. In the query window, replace the script with the following:
+
+    ```sql
+    SELECT * FROM sys.dm_pdw_exec_sessions where status <> 'Closed' and session_id <> session_id();
+    ```
+
+    All queries executed on SQL pool are logged to `sys.dm_pdw_exec_requests`. This DMV contains the last 10,000 queries executed. The `request_id` uniquely identifies each query and is the primary key for this DMV. The `request_id` is assigned sequentially for each new query and is prefixed with `QID`, which stands for query ID. Querying this DMV for a given `session_id` shows all queries for a given logon.
+
+5. Select **Run** from the toolbar menu to execute the SQL command.
+
+6. Let's flood the system with queries to create operations to monitor. To do this, we will run a Azure Synapse Pipeline which triggers queries. Select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline, which will run / trigger  `asa.sql.workload02` queries. **Let this pipeline run for 30 seconds to 1 minute, then cancel the run recursively**.
+
+7. In the query window, replace the script with the following:
+
+    ```sql
+    SELECT *
+    FROM sys.dm_pdw_exec_requests
+    WHERE status not in ('Completed','Failed','Cancelled')
+      AND session_id <> session_id()
+    ORDER BY submit_time DESC;
+    ```
+
+8. Select **Run** from the toolbar menu to execute the SQL command. You should see a list of sessions in the query results similar to the following. **Note the `Request_ID` of a query** in the results that you would like to investigate (*keep this value in a text editor for a later step*):
+
+    ![Active query results.](media/query-active-requests-results.png "Query results")
+
+9. As an alternative, you can execute the following SQL command to find the top 10 longest running queries.
+
+    ```sql
+    SELECT TOP 10 *
+    FROM sys.dm_pdw_exec_requests
+    ORDER BY total_elapsed_time DESC;
+    ```
+
+10. To simplify the lookup of a query in the `sys.dm_pdw_exec_requests` table, use `LABEL` to assign a comment to your query, which can be looked up in the `sys.dm_pdw_exec_requests` view. To test using the labels, replace the script in the query window with the following:
+
+    ```sql
+    SELECT *
+    FROM sys.tables
+    OPTION (LABEL = 'My Query');
+    ```
+
+11. Select **Run** from the toolbar menu to execute the SQL command.
+
+12. In the query window, replace the script with the following to filter the results with the label, `My Query`.
+
+    ```sql
+    -- Find a query with the Label 'My Query'
+    -- Use brackets when querying the label column, as it is a key word
+    SELECT  *
+    FROM sys.dm_pdw_exec_requests
+    WHERE [label] = 'My Query';
+    ```
+
+13. Select **Run** from the toolbar menu to execute the SQL command. You should see the previously run query in the results view.
+
+14. In the query window, replace the script with the following to retrieve the query's distributed SQL (DSQL) plan from `sys.dm_pdw_request_steps`. **Be sure to replace** the `QID#####` with the `Request_ID` you noted in Step 8:
+
+    ```sql
+    SELECT * FROM sys.dm_pdw_request_steps
+    WHERE request_id = 'QID####'
+    ORDER BY step_index;
+    ```
+
+15. Select **Run** from the toolbar menu to execute the SQL command. You should see results showing the distributed query plan steps for the specified request:
+
+    ![The query results are displayed.](media/sql-dsql-plan-results.png "Query results")
+
+    > When a DSQL plan is taking longer than expected, the cause can be a complex plan with many DSQL steps or just one step taking a long time. If the plan is many steps with several move operations, consider optimizing your table distributions to reduce data movement.
+
+### Task 4: Orchestration Monitoring with the Monitor Hub
+
+1. Let's run a pipeline to monitor its execution in the next step. To do this, select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline.
+
+    ![The add trigger and trigger now menu items are highlighted.](media/ex7-task4-01.png "Add trigger")
+
+2. Navigate to the `Monitor` hub. Then select **Pipeline runs** to get a list of pipelines that ran during the last 24 hours. Observe the Pipeline status.
+
+    ![The pipeline runs blade is displayed within the Monitor hub.](media/ex7-task4-02.png "Monitor - Pipeline runs")
+
+3. Hover over the running pipeline and select **Cancel** to cancel the execution of the current instance of the pipeline.
+
+    ![The Cancel option is highlighted.](media/ex7-task4-03.png "Cancel")
+
+### Task 5: Monitoring SQL Requests with the Monitor Hub
+
+1. Let's run a pipeline to monitor its execution in the next step. To do this, select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline.
+
+    ![The add trigger and trigger now menu items are highlighted.](media/ex7-task5-01.png "Add trigger")
+
+2. Navigate to the `Monitor` hub. Then select **SQL requests** to get a list of SQL requests that ran during the last 24 hours.
+
+3. Select the **Pool** filter and select your SQL Pool. Observe the `Request Submitter`, `Submit Time`, `Duration`, and `Queued Duration` values.
+
+    ![The SQL requests blade is displayed within the Monitor hub.](media/ex7-task5-02.png "Monitor - SQL requests")
+
+4. Hover onto a SQL Request log and select `Request Content` to access the actual T-SQL command executed as part of the SQL Request.
+
+    ![The request content link is displayed over a SQL request.](media/ex7-task5-03.png "SQL requests")
+
+5. You may now return to the **Monitor** hub and cancel the in-progress pipeline run.
+
+## Exercise 8: Synapse Pipelines and Cognitive Search (Optional)
 
 **Duration**: 45 minutes
 
@@ -1505,774 +2273,6 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The tabular results of the previous query is shown.](media/ex5-task4-047.png "SQL Query results")
 
-## Exercise 6: Security
-
-**Duration**: 30 minutes
-
-### Task 1: Column level security
-
-It is important to identify data columns of that hold sensitive information. Types of sensitive information could be social security numbers, email addresses, credit card numbers, financial totals, and more. Azure Synapse Analytics allows you define permissions that prevent users or roles select privileges on specific columns.
-
-1. Create a new SQL script by selecting **Develop** from the left menu, then in the **Develop** blade, expanding the **+** button and selecting **SQL script**.
-
-2. Copy and paste the following query into the query window. Then, step through each statement group by highlighting all queries between each comment block in the query window, and selecting **Run** from the query window toolbar menu. The query is documented inline. Ensure you are connected to **SQLPool01** when running the queries.
-
-    ```sql
-        /*  Column-level security feature in Azure Synapse simplifies the design and coding of security in applications.
-        It ensures column level security by restricting column access to protect sensitive data. */
-
-    /* Scenario: In this scenario we will be working with two users. The first one is the CEO, he has access to all
-        data. The second one is DataAnalystMiami, this user doesn't have access to the confidential Revenue column
-        in the CampaignAnalytics table. Follow this lab, one step at a time to see how Column-level security removes access to the
-        Revenue column to DataAnalystMiami */
-
-    --Step 1: Let us see how this feature in Azure Synapse works. Before that let us have a look at the Campaign Analytics table.
-    select  Top 100 * from wwi_mcw.CampaignAnalytics
-    where City is not null and state is not null
-
-    /*  Consider a scenario where there are two users.
-        A CEO, who is an authorized  personnel with access to all the information in the database
-        and a Data Analyst, to whom only required information should be presented.*/
-
-    -- Step:2 Verify the existence of the “CEO” and “DataAnalystMiami” users in the Datawarehouse.
-    SELECT Name as [User1] FROM sys.sysusers WHERE name = N'CEO';
-    SELECT Name as [User2] FROM sys.sysusers WHERE name = N'DataAnalystMiami';
-
-
-    -- Step:3 Now let us enforcing column level security for the DataAnalystMiami.
-    /*  The CampaignAnalytics table in the warehouse has information like ProductID, Analyst, CampaignName, Quantity, Region, State, City, RevenueTarget and Revenue.
-        The Revenue generated from every campaign is classified and should be hidden from DataAnalystMiami.
-    */
-
-    REVOKE SELECT ON wwi_mcw.CampaignAnalytics FROM DataAnalystMiami;
-    GRANT SELECT ON wwi_mcw.CampaignAnalytics([Analyst], [CampaignName], [Region], [State], [City], [RevenueTarget]) TO DataAnalystMiami;
-    -- This provides DataAnalystMiami access to all the columns of the Sale table but Revenue.
-
-    -- Step:4 Then, to check if the security has been enforced, we execute the following query with current User As 'DataAnalystMiami', this will result in an error
-    --  since DataAnalystMiami doesn't have select access to the Revenue column
-    EXECUTE AS USER ='DataAnalystMiami';
-    select TOP 100 * from wwi_mcw.CampaignAnalytics;
-    ---
-    -- The following query will succeed since we are not including the Revenue column in the query.
-    EXECUTE AS USER ='DataAnalystMiami';
-    select [Analyst],[CampaignName], [Region], [State], [City], [RevenueTarget] from wwi_mcw.CampaignAnalytics;
-
-    -- Step:5 Whereas, the CEO of the company should be authorized with all the information present in the warehouse.To do so, we execute the following query.
-    Revert;
-    GRANT SELECT ON wwi_mcw.CampaignAnalytics TO CEO;  --Full access to all columns.
-
-    -- Step:6 Let us check if our CEO user can see all the information that is present. Assign Current User As 'CEO' and the execute the query
-    EXECUTE AS USER ='CEO'
-    select * from wwi_mcw.CampaignAnalytics
-    Revert;
-    ```
-
-    ![The query tab toolbar is displayed with the Run button selected.](media/querytoolbar_run.png "Running a SQL Query")
-
-3. At the far right of the top toolbar, select the **Discard all** button as we will not be saving this query. When prompted, choose to **Discard changes**.
-
-   ![The top toolbar menu is displayed with the Discard all button highlighted.](media/toptoolbar_discardall.png "Discarding all changes")
-
-### Task 2: Row level security
-
-In many organizations it is important to filter certain rows of data by user. In the case of WWI, they wish to have data analysts only see their data. In the campaign analytics table, there is an Analyst column that indicates to which analyst that row of data belongs. In the past, organizations would create views for each analyst - this was a lot of work and unnecessary overhead. Using Azure Synapse Analytics, you can define row level security that compares the user executing the query to the Analyst column, filtering the data so they only see the data destined for them.
-
-1. Create a new SQL script by selecting **Develop** from the left menu, then in the **Develop** blade, expanding the **+** button and selecting **SQL script**.
-
-2. Copy and paste the following query into the query window. Then, step through each statement group by highlighting all queries between each comment block in the query window, and selecting **Run** from the query window toolbar menu. The query is documented inline.
-
-    ```sql
-    /* Row level Security (RLS) in Azure Synapse enables us to use group membership to control access to rows in a table.
-    Azure Synapse applies the access restriction every time the data access is attempted from any user.
-    Let see how we can implement row level security in Azure Synapse.*/
-
-    -- Row-Level Security (RLS), 1: Filter predicates
-    -- Step:1 The Sale table has two Analyst values: DataAnalystMiami and DataAnalystSanDiego.
-    --     Each analyst has jurisdiction across a specific Region. DataAnalystMiami on the South East Region
-    --      and DataAnalystSanDiego on the Far West region.
-    SELECT DISTINCT Analyst, Region FROM wwi_mcw.CampaignAnalytics order by Analyst ;
-
-    /* Scenario: WWI requires that an Analyst only see the data for their own data from their own region. The CEO should see ALL data.
-        In the Sale table, there is an Analyst column that we can use to filter data to a specific Analyst value. */
-
-    /* We will define this filter using what is called a Security Predicate. This is an inline table-valued function that allows
-        us to evaluate additional logic, in this case determining if the Analyst executing the query is the same as the Analyst
-        specified in the Analyst column in the row. The function returns 1 (will return the row) when a row in the Analyst column is the same as the user executing the query (@Analyst = USER_NAME()) or if the user executing the query is the CEO user (USER_NAME() = 'CEO')
-        whom has access to all data.
-    */
-
-    -- Review any existing security predicates in the database
-    SELECT * FROM sys.security_predicates
-
-    --Step:2 Create a new Schema to hold the security predicate, then define the predicate function. It returns 1 (or True) when
-    --  a row should be returned in the parent query.
-    GO
-    CREATE SCHEMA Security
-    GO
-    CREATE FUNCTION Security.fn_securitypredicate(@Analyst AS sysname)  
-        RETURNS TABLE  
-    WITH SCHEMABINDING  
-    AS  
-        RETURN SELECT 1 AS fn_securitypredicate_result
-        WHERE @Analyst = USER_NAME() OR USER_NAME() = 'CEO'
-    GO
-    -- Now we define security policy that adds the filter predicate to the Sale table. This will filter rows based on their login name.
-    CREATE SECURITY POLICY SalesFilter  
-    ADD FILTER PREDICATE Security.fn_securitypredicate(Analyst)
-    ON wwi_mcw.CampaignAnalytics
-    WITH (STATE = ON);
-
-    ------ Allow SELECT permissions to the Sale Table.------
-    GRANT SELECT ON wwi_mcw.CampaignAnalytics TO CEO, DataAnalystMiami, DataAnalystSanDiego;
-
-    -- Step:3 Let us now test the filtering predicate, by selecting data from the Sale table as 'DataAnalystMiami' user.
-    EXECUTE AS USER = 'DataAnalystMiami'
-    SELECT * FROM wwi_mcw.CampaignAnalytics;
-    revert;
-    -- As we can see, the query has returned rows here Login name is DataAnalystMiami
-
-    -- Step:4 Let us test the same for  'DataAnalystSanDiego' user.
-    EXECUTE AS USER = 'DataAnalystSanDiego';
-    SELECT * FROM wwi_mcw.CampaignAnalytics;
-    revert;
-    -- RLS is working indeed.
-
-    -- Step:5 The CEO should be able to see all rows in the table.
-    EXECUTE AS USER = 'CEO';  
-    SELECT * FROM wwi_mcw.CampaignAnalytics;
-    revert;
-    -- And he can.
-
-    --Step:6 To disable the security policy we just created above, we execute the following.
-    ALTER SECURITY POLICY SalesFilter  
-    WITH (STATE = OFF);
-
-    DROP SECURITY POLICY SalesFilter;
-    DROP FUNCTION Security.fn_securitypredicate;
-    DROP SCHEMA Security;
-    ```
-
-    ![The query tab toolbar is displayed with the Run button selected.](media/querytoolbar_run.png "Running a query")
-
-3. At the far right of the top toolbar, select the **Discard all** button as we will not be saving this query. When prompted, choose to **Discard changes**.
-
-   ![The top toolbar menu is displayed with the Discard all button highlighted.](media/toptoolbar_discardall.png "Discarding all changes")
-
-### Task 3: Dynamic data masking
-
-As an alternative to column level security, SQL Administrators also have the option of masking sensitive data. This will result in data being obfuscated when returned in queries. The data is still stored in a pristine state in the table itself. SQL Administrators can grant unmask privileges to users that have permissions to see this data.
-
-1. Create a new SQL script by selecting **Develop** from the left menu, then in the **Develop** blade, expanding the **+** button and selecting **SQL script**.
-
-2. Copy and paste the following query into the query window. Then, step through each statement group by highlighting all queries between each comment block in the query window, and selecting **Run** from the query window toolbar menu. The query is documented inline.
-
-    ```sql
-    ----- Dynamic Data Masking (DDM) ---------
-    /*  Dynamic data masking helps prevent unauthorized access to sensitive data by enabling customers
-        to designate how much of the sensitive data to reveal with minimal impact on the application layer.
-        Let see how */
-
-    /* Scenario: WWI has identified sensitive information in the CustomerInfo table. They would like us to
-        obfuscate the CreditCard and Email columns of the CustomerInfo table to DataAnalysts */
-
-    -- Step:1 Let's first get a view of CustomerInfo table.
-    SELECT TOP (100) * FROM wwi_mcw.CustomerInfo;
-
-    -- Step:2 Let's confirm that there are no Dynamic Data Masking (DDM) applied on columns.
-    SELECT c.name, tbl.name as table_name, c.is_masked, c.masking_function  
-    FROM sys.masked_columns AS c  
-    JOIN sys.tables AS tbl
-        ON c.[object_id] = tbl.[object_id]  
-    WHERE is_masked = 1
-        AND tbl.name = 'CustomerInfo';
-    -- No results returned verify that no data masking has been done yet.
-
-    -- Step:3 Now let's mask 'CreditCard' and 'Email' Column of 'CustomerInfo' table.
-    ALTER TABLE wwi_mcw.CustomerInfo  
-    ALTER COLUMN [CreditCard] ADD MASKED WITH (FUNCTION = 'partial(0,"XXXX-XXXX-XXXX-",4)');
-    GO
-    ALTER TABLE wwi_mcw.CustomerInfo
-    ALTER COLUMN Email ADD MASKED WITH (FUNCTION = 'email()');
-    GO
-    -- The columns are successfully masked.
-
-    -- Step:4 Let's see Dynamic Data Masking (DDM) applied on the two columns.
-    SELECT c.name, tbl.name as table_name, c.is_masked, c.masking_function  
-    FROM sys.masked_columns AS c  
-    JOIN sys.tables AS tbl
-        ON c.[object_id] = tbl.[object_id]  
-    WHERE is_masked = 1
-        AND tbl.name ='CustomerInfo';
-
-    -- Step:5 Now, let's grant SELECT permission to 'DataAnalystMiami' on the 'CustomerInfo' table.
-   GRANT SELECT ON wwi_mcw.CustomerInfo TO DataAnalystMiami;  
-
-    -- Step:6 Logged in as  'DataAnalystMiami' let's execute the select query and view the result.
-    EXECUTE AS USER = 'DataAnalystMiami';  
-    SELECT * FROM wwi_mcw.CustomerInfo;
-
-    -- Step:7 Let's remove the data masking using UNMASK permission
-    GRANT UNMASK TO DataAnalystMiami;
-    EXECUTE AS USER = 'DataAnalystMiami';  
-    SELECT *
-    FROM wwi_mcw.CustomerInfo;
-    revert;
-    REVOKE UNMASK TO DataAnalystMiami;  
-
-    ----step:8 Reverting all the changes back to as it was.
-    ALTER TABLE wwi_mcw.CustomerInfo
-    ALTER COLUMN CreditCard DROP MASKED;
-    GO
-    ALTER TABLE wwi_mcw.CustomerInfo
-    ALTER COLUMN Email DROP MASKED;
-    GO
-    ```
-
-    ![The query tab toolbar is displayed with the Run button selected.](media/querytoolbar_run.png "Running a query")
-
-3. At the far right of the top toolbar, select the **Discard all** button as we will not be saving this query. When prompted, choose to **Discard changes**.
-
-   ![The top toolbar menu is displayed with the Discard all button highlighted.](media/toptoolbar_discardall.png "Discarding all changes")
-
-## Exercise 7: Machine Learning
-
-**Duration**: 60 minutes
-
-Using Azure Synapse Analytics, data scientists are no longer required to use separate tooling to create and deploy machine learning models.
-
-In this exercise, you will create multiple machine learning models. You will learn how to consume these models in your notebook. You will also deploy a model as a web service to Azure Container Instances and consume the service.
-
-### Task 1: Create a SQL Datastore and source Dataset: Portal
-
-1. Open the lab resource group, locate and open the **amlworkspace{{suffix}}** Machine Learning resource.
-
-    ![The lab resource group is shown with the Machine Learning resource selected](media/resourcelist_amlstudio.png "Machine learning resource")
-
-2. On the **Overview** screen of the Machine Learning resource, select the **Studio web URL** link.
-
-    ![The machine learning resource overview screen is selected with the Studio web URL link highlighted.](media/machinelearning_overview.png "Machine learning overview screen")
-
-3. From the left menu of **Azure Machine Learning Studio**, select the **Datastores** item.
-
-    ![The Machine Learning Studio menu is shown with the Datastores item highlighted](media/amlstudio_datastores_menu.png "AML Studio menu")
-
-4. On the **Datastores** screen top menu, select **+ New datastore**.
-
-5. On the **New datastore** blade, configure it as follows and select **Create**:
-
-    | Field | Value |
-    |--------------|---------------|
-    | New datastore (name) | sqlpool01 |
-    | Datastore type | Azure SQL database |
-    | Account selection method | From Azure subscription |
-    | Subscription ID | Select the lab subscription. |
-    | Server name / database name  | Select asaworkspace{{suffix}}/SQLPool01. |
-    | Authentication type | SQL authentication |
-    | User ID | asa.sql.admin |
-    | Password | The SQL Admin password you chose when deploying the lab resources. |
-
-    ![The new datastore blade is shown populated with the preceding values.](media/amlstudio_sqlpooldatasource.png "New datastore blade")
-
-6. From the left menu, select **Datasets**, and with the **Registered datasets** tab selected, expand the **+ Create dataset** button and select **From datastore**.
-
-    ![The Datasets screen is displayed with the +Create dataset button highlighted.](media/createfirstamldataset.png "AML Studio Datasets screen")
-
-7. In the **Create dataset from datastore** Basic info form, name the dataset **AggregatedProductSeasonality** and select **Next**.
-
-    ![The basic info form is displayed populated with the preceding values.](media/createdataset_basicinfo.png "Dataset basic info form")
-
-8. On the **Datastore selection** form, select **Previously created datasource**, choose **sqlpool01** from the list and select the **Select datastore** button.
-
-    ![The Datastore selection form is displayed as described above.](media/amldatasetselectdatasource.png "The Datastore selection form")
-
-9. In the next **Datastore selection** form, enter the following **SQL query**. Then expand the **Advanced settings** and enter **100** for the **Query timeout (seconds)** value. Select **Next**:
-
-    ```sql
-    SELECT P.ProductId,P.Seasonality,S.TransactionDateId,COUNT(*) as TransactionItemsCount
-    FROM wwi_mcw.SaleSmall S
-    JOIN wwi_mcw.Product P ON S.ProductId = P.ProductId
-    where TransactionDateId between 20190101 and 20191231
-    GROUP BY P.ProductId ,P.Seasonality,S.TransactionDateId
-    ```
-
-    ![The datastore selection form is displayed populated with the preceding query.](media/aml_dataset_datastoreselectionquery.png "Dataset query details")
-
-10. The **Settings and preview** data table will be displayed after a few moments. Review this data, then select the **Next** button.
-
-    ![The settings and preview screen is displayed showing a table of data.](media/amlstudio_dataset_settingsandpreview.png "The Settings and Preview screen")
-
-11. Review the **Schema** field listing, then select **Next**.
-
-    ![The Schema screen is displayed showing a listing of columns and their types.](media/amlstudio_dataset_schema.png "The dataset Schema field listing")
-
-12. On the **Confirm details** screen, select **Create**.
-
-    ![The dataset Confirm details screen is displayed showing a summary of the choices from the previous steps.](media/aml_dataset_confirmdetails.png "The dataset Confirm details screen")
-
-### Task 2: Create compute infrastructure
-
-1. From the left menu of Machine Learning Studio, select **Compute**.
-
-2. On the **Compute** screen with the **Compute instances** tab selected. Choose the **Create** button.
-
-    ![The Azure Machine Learning Studio compute screen is displayed, with the compute instances tab selected, and the Create button highlighted.](media/aml_createcomputebutton.png "Azure Machine Learning Compute screen")
-
-3. On the **Create compute instance**, **Select virtual machine** form, configure it as follows, then select **Next**:
-
-    | Field | Value |
-    |--------------|---------------|
-    | Virtual machine type | CPU |
-    | Virtual machine size | Search for and select Standard_DS3_v2. |
-
-    ![The new compute instance virtual machine form is displayed populated with the preceding values.](media/aml_newcomputeform.png "The new compute instance virtual machine form")
-
-4. On the **Configure Settings** form, enter a globally unique **Compute name** of your choice, and select **Create**.
-
-    ![The new compute instance settings form is displayed populated with a compute name](media/aml_newcomputeform_settings.png "The new compute instance settings form")
-
-5. Select the **Compute clusters** tab, and select **Create**.
-
-6. On the **New compute cluster**, **Select virtual machine** form, configure the virtual machine as follows, then select **Next**:
-
-    | Field | Value |
-    |--------------|---------------|
-    | Virtual machine priority | Dedicated |
-    | Virtual machine type | CPU |
-    | Virtual machine size | Search for and select Standard_DS3_v2. |
-
-    ![The New compute cluster virtual machine form is displayed with the preceding values.](media/aml_cluster_settings.png "The New compute cluster virtual machine form")
-
-7. On the **Configure Settings** form, configure it as follows, then select **Create**:
-
-    | Field | Value |
-    |--------------|---------------|
-    | Compute name | automlcluster |
-    | Minimum number of nodes | 0 |
-    | Maximum number of nodes | 3 |
-    | Idle seconds before scale down | 120 |
-
-    ![The new compute cluster configure settings form is displayed populated with the preceding values.](media/aml_cluster_configsettings.png "The new compute cluster Configure settings form")
-
-### Task 3: Use a notebook in AML Studio to prepare data and create a Product Seasonality Classifier model using XGBoost
-
-1. In Azure Machine Learning (AML) Studio, select **Notebooks** from the left menu.
-
-2. In the **Notebooks** pane, select the **Upload** icon from the toolbar.
-
-    ![In Azure Machine Learning Studio, the Notebooks item is selected from the left menu, and the Upload Icon is highlighted in the Notebooks panel.](media/aml_uploadnotebook_menu.png "Upload notebook")
-
-3. In the **Open** dialog, select **Hands-on lab/artifacts/ProductSeasonality_sklearn.ipynb**. When prompted, check the boxes to **Overwrite if already exists** and **I trust contents of this file** and select **Upload**.
-
-    ![A dialog is displayed with the Overwrite if already exists and the I trust contents of this file checkboxes checked.](media/aml_notebook_uploadwarning.png "File upload warning dialog")
-
-4. In the top toolbar of the notebook, expand the **Editors** item, and select **Edit in Jupyter**.
-
-    ![On the notebook toolbar, the Editors item is expanded with the Edit in Jupyter item selected.](media/aml_notebook_editinjupyter.png "Edit in Jupyter")
-
-5. Review and run each cell in the notebook individually to gain understanding of the functionality being demonstrated.
-
->**Note**: Running this notebook in its entirety is required for the next task.
-
-### Task 4: Leverage Automated ML to create and deploy a Product Seasonality Classifier model
-
-1. In Azure Machine Learning (AML) Studio, select **Experiments** from the left menu, then expand the **+ Create** button, and select **Automated ML run**.
-
-    ![The AML Studio Experiments screen is shown with the Create button expanded and the Automated ML run item selected.](media/aml_experiment_create.png "The AML Studio Experiments screen")
-
-2. In the previous task, we registered our PCA dataframe (named **pcadata**) to use with Auto ML. Select **pcadata** from the list and select **Next**.
-
-    ![On the Select dataset screen, the pcadata item is selected from the dataset list.](media/aml_automl_datasetselection.png "The select dataset form is displayed")
-
-3. On the **Configure run** screen, select the **Create a new compute** link beneath the **Select compute cluster** field.
-
-4. Back on the **Configure run** form, name the experiment **ProductSeasonalityClassifier**, select **Seasonality** as the **Target column** and select **automlcluster** as the compute cluster. Select **Next**.
-
-    ![The Configure run form is displayed populated with the preceding values.](media/automl_experiment_configurerun.png "The Configure run form")
-
-5. On the **Select task type** screen, select **Classification**, then choose **Finish**.
-
-    ![The Select task type screen is displayed with the Classification item selected.](media/aml_automlrun_tasktypeform.png "The Select task type screen")
-
-6. The experiment will then be run. It will take approximately 20-25 minutes for it to complete. Once it has completed, it will display the run results details. In the **Best model summary** box, select the **Algorithm name** link.
-
-    ![The Run is shown as completed and the link below Algorithm name in the Best model summary box is selected.](media/aml_automl_run_bestmodel_details.png "Completed AutoML run details")
-
-7. On the Model run screen, select **Deploy** from the top toolbar.
-
-    ![The specific model run screen is shown with the Deploy button selected from the top toolbar.](media/aml_automl_deploybestmodel.png "The best model run")
-
-8. On the **Deploy a model** blade, configure the deployment as follows, then select **Deploy**:
-
-    | Field | Value |
-    |--------------|---------------|
-    | Name | productseasonalityclassifier |
-    | Description | Product Seasonality Classifier. |
-    | Compute type | Azure Container Instance |
-    | Enable authentication | Off |
-
-    ![The Deploy a model blade is shown populated with the preceding values.](media/aml_automl_deploymodelaci.png "The Deploy a model blade")
-
-9. Once deployed, the Model summary will be displayed. You can view the endpoint by selecting the **Deploy status** link.
-
-    ![The successful model deployment was successful and the Deploy status link is highlighted.](media/aml_automl_modeldeploysuccess.png "The Model summary screen")
-
-10. Review the details of the deployed model service endpoint.
-
-    ![The service endpoint details screen is displayed.](media/aml_automl_modelserviceendpointdetails.png "The service endpoint details screen")
-
-## Exercise 8: Monitoring
-
-**Duration**: 45 minutes
-
-Azure Synapse Analytics provides a rich monitoring experience within the Azure portal to surface insights regarding your data warehouse workload.
-
-You can monitor active SQL requests using the SQL requests area of the Monitor Hub. This includes details like the pool, submitter, duration, queued duration, workload group assigned, importance, and the request content.
-
-Pipeline runs can be monitored using the Monitor Hub and selecting Pipeline runs. Here you can filter pipeline runs and drill in to view the activity runs associated with the pipeline run and monitor the running of in-progress pipelines.
-
-### Task 1: Workload importance
-
-Running mixed workloads can pose resource challenges on busy systems. Solution architects seek ways to separate classic data warehousing activities (such as loading, transforming, and querying data) to ensure that enough resources exist to hit SLAs.
-
-Synapse SQL pool workload management in Azure Synapse consists of three high-level concepts: workload classification, workload importance and workload isolation. These capabilities give you more control over how your workload utilizes system resources.
-
-Workload importance influences the order in which a request gets access to resources. On a busy system, a request with higher importance has first access to resources. Importance can also ensure ordered access to locks.
-
-Setting importance in Synapse SQL for Azure Synapse allows you to influence the scheduling of queries. Queries with higher importance will be scheduled to run before queries with lower importance. To assign importance to queries, you need to create a workload classifier.
-
-1. Navigate to the **Develop** hub.
-
-    ![The Develop menu item is highlighted.](media/develop-hub.png "Develop hub")
-
-2. From the **Develop** menu, select the + button and choose **SQL Script** from the context menu.
-
-    ![The SQL script context menu item is highlighted.](media/synapse-studio-new-sql-script.png "New SQL script")
-
-3. In the toolbar menu, connect to the **SQL Pool** database to execute the query.
-
-    ![The connect to option is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-connect.png "Query toolbar")
-
-4. In the query window, replace the script with the following to confirm that there are no queries currently being run by users logged in as `asa.sql.workload01`, representing the CEO of the organization or `asa.sql.workload02` representing the data analyst working on the project:
-
-    ```sql
-    --First, let's confirm that there are no queries currently being run by users logged in as CEONYC or AnalystNYC.
-
-    SELECT s.login_name, r.[Status], r.Importance, submit_time,
-    start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
-    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
-    WHERE s.login_name IN ('asa.sql.workload01','asa.sql.workload02') and Importance
-    is not NULL AND r.[status] in ('Running','Suspended')
-    --and submit_time>dateadd(minute,-2,getdate())
-    ORDER BY submit_time ,s.login_name
-    ```
-
-5. Select **Run** from the toolbar menu to execute the SQL command.
-
-    ![The run button is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-run.png "Run")
-
-6. Next, you will flood the system with queries and see what happens for `asa.sql.workload01` and `asa.sql.workload02`. To do this, we'll run a Azure Synapse Pipeline that executes a large number of queries.
-
-7. Select the `Integrate` item from the left menu.
-
-8. **Run** the **Exercise 8 - ExecuteDataAnalystandCEOQueries** Pipeline, which will run the `asa.sql.workload01` and `asa.sql.workload02` queries. You can run the pipeline with the Debug option if you have an instance of the Integration Runtime running.
-
-9. Select **Add trigger**, then **Trigger now**. In the dialog that appears, select **OK**. **Let this pipeline run for 30 seconds to 1 minute, then proceed to the next step**.
-
-    ![The add trigger and trigger now menu items are highlighted.](media/trigger-data-analyst-and-ceo-queries-pipeline.png "Add trigger")
-
-10. From the left menu, select the **Monitor** hub. Hover over the link of the in-progress pipeline, and select the **Cancel recursive** icon that displays.
-
-    ![The Monitor Hub icon is selected from the left menu, and the Cancel recursive button is selected on the in progress pipeline.](media/cancel_running_pipeline_monitor_hub.png)
-
-11. From the left menu, select the **Develop** hub and return to your SQL script. Let's see what happened to all the queries that flooded the system. In the query window, replace the script with the following:
-
-    ```sql
-    SELECT s.login_name, r.[Status], r.Importance, submit_time, start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
-    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
-    WHERE s.login_name IN ('asa.sql.workload01','asa.sql.workload02') and Importance
-    is not NULL AND r.[status] in ('Running','Suspended') and submit_time>dateadd(minute,-4,getdate())
-    ORDER BY submit_time ,status
-    ```
-
-12. Select **Run** from the toolbar menu to execute the SQL command. You should see an output similar to the following:
-
-    ![SQL query results.](media/sql-query-2-results.png "SQL script")
-
-13. Intermittently perform the preceding query until all queries have been run and no results are returned.
-
-14. We will give our `asa.sql.workload01` user queries priority by implementing the **workload importance** feature. In the query window, replace the script with the following:
-
-    ```sql
-    IF EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE name = 'CEO')
-    BEGIN
-        DROP WORKLOAD CLASSIFIER CEO;
-    END
-    CREATE WORKLOAD CLASSIFIER CEO
-      WITH (WORKLOAD_GROUP = 'largerc'
-      ,MEMBERNAME = 'asa.sql.workload01',IMPORTANCE = High);
-    ```
-
-15. Select **Run** from the toolbar menu to execute the SQL command.
-
-16. Let's flood the system again with queries and see what happens this time for `asa.sql.workload01` and `asa.sql.workload02` queries. To do this, we'll run an Azure Synapse Pipeline that runs a large number queries. **Similar to before, run this pipeline for about 30 seconds to 1 minute**.
-
-    - **Select** the `Integrate` item from the left menu.
-
-    - **Run** the **Exercise 8 - ExecuteDataAnalystandCEOQueries** Pipeline, which will run the `asa.sql.workload01` and `asa.sql.workload02` queries.
-
-17. In the query window, replace the script with the following to see what happens to the `asa.sql.workload01` queries this time:
-
-    ```sql
-    SELECT s.login_name, r.[Status], r.Importance, submit_time, start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
-    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
-    WHERE s.login_name IN ('asa.sql.workload01','asa.sql.workload02') and Importance
-    is not NULL AND r.[status] in ('Running','Suspended') and submit_time>dateadd(minute,-2,getdate())
-    ORDER BY submit_time ,status desc
-    ```
-
-18. Select **Run** from the toolbar menu to execute the SQL command. You should see an output similar to the following that shows query executions for the `asa.sql.workload01` user having a **high** importance. Also note that the 'asa.sql.workload02' queries are in **Suspended** status while the high priority queries are being run.
-
-    ![SQL query results showing asa.sql.workload01 queries with a higher importance than those queries from asa.sql.workload02.](media/sql-query-4-results.png "SQL script")
-
-### Task 2: Workload isolation
-
-Workload isolation means resources are reserved, exclusively, for a workload group. Workload groups are containers for a set of requests and are the basis for how workload management, including workload isolation, is configured on a system. A simple workload management configuration can manage data loads and user queries.
-
-In the absence of workload isolation, requests operate in the shared pool of resources. Access to resources in the shared pool is not guaranteed and is assigned on an importance basis.
-
-Configuring workload isolation should be done with caution as the resources are allocated to the workload group even if there are no active requests in the workload group. Over-configuring isolation can lead to diminished overall system utilization.
-
-Users should avoid a workload management solution that configures 100% workload isolation: 100% isolation is achieved when the sum of `min_percentage_resource` configured across all workload groups equals 100%. This type of configuration is overly restrictive and rigid, leaving little room for resource requests that are accidentally misclassified. There is a provision to allow one request to execute from workload groups not configured for isolation.
-
-1. Navigate to the **Develop** hub.
-
-    ![The Develop menu item is highlighted.](media/develop-hub.png "Develop hub")
-
-2. From the **Develop** menu, select the + button and choose **SQL Script** from the context menu.
-
-    ![The SQL script context menu item is highlighted.](media/synapse-studio-new-sql-script.png "New SQL script")
-
-3. In the toolbar menu, connect to the **SQL Pool** database to execute the query.
-
-    ![The connect to option is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-connect.png "Query toolbar")
-
-4. In the query window, replace the script with the following:
-
-    ```sql
-    IF NOT EXISTS (SELECT * FROM sys.workload_management_workload_groups where name = 'CEODemo')
-    BEGIN
-        Create WORKLOAD GROUP CEODemo WITH  
-        ( MIN_PERCENTAGE_RESOURCE = 50        -- integer value
-        ,REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25 --  
-        ,CAP_PERCENTAGE_RESOURCE = 100
-        )
-    END
-    ```
-
-    The code creates a workload group called `CEODemo` that reserves resources exclusively for the workload group. In this example, a workload group with a `MIN_PERCENTAGE_RESOURCE` set to 50% and `REQUEST_MIN_RESOURCE_GRANT_PERCENT` set to 25% is guaranteed 2 concurrent queries.
-
-5. Select **Run** from the toolbar menu to execute the SQL command.
-
-6. In the query window, replace the script with the following to create a workload Classifier called `CEODreamDemo` that assigns a workload group and importance to incoming requests:
-
-    ```sql
-    IF NOT EXISTS (SELECT * FROM sys.workload_management_workload_classifiers where  name = 'CEODreamDemo')
-    BEGIN
-        Create Workload Classifier CEODreamDemo with
-        ( Workload_Group ='CEODemo',MemberName='asa.sql.workload02',IMPORTANCE = BELOW_NORMAL);
-    END
-    ```
-
-7. Select **Run** from the toolbar menu to execute the SQL command.
-
-8. In the query window, replace the script with the following to confirm that there are no active queries being run by `asa.sql.workload02`:
-
-    ```sql
-    SELECT s.login_name, r.[Status], r.Importance, submit_time,
-    start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
-    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
-    WHERE s.login_name IN ('asa.sql.workload02') and Importance
-    is not NULL AND r.[status] in ('Running','Suspended')
-    ORDER BY submit_time, status
-    ```
-
-9. Let's flood the system with queries and see what happens for `asa.sql.workload02`. To do this, we will run an Azure Synapse Pipeline that runs a large number of queries. Select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline, which will run the  `asa.sql.workload02` queries. **Let this pipeline run for 30 seconds to 1 minute, then cancel the run recursively**.
-
-10. In the query window, replace the script with the following to see what happened to all the `asa.sql.workload02` queries that were flooded into the system:
-
-    ```sql
-    SELECT s.login_name, r.[Status], r.Importance, submit_time,
-    start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
-    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
-    WHERE s.login_name IN ('asa.sql.workload02') and Importance
-    is not NULL AND r.[status] in ('Running','Suspended')
-    ORDER BY submit_time, status
-    ```
-
-11. Select **Run** from the toolbar menu to execute the SQL command. You should see an output similar to the following that shows the importance for each session set to `below_normal` and two queries being run in parallel:
-
-    ![The script results show that each session was executed with below normal importance with two queries being run in parallel.](media/sql-result-below-normal.png "SQL script")
-
-12. In the query window, replace the script with the following to set 3.25% minimum resources per request:
-
-    ```sql
-    IF  EXISTS (SELECT * FROM sys.workload_management_workload_classifiers where group_name = 'CEODemo')
-    BEGIN
-        Drop Workload Classifier CEODreamDemo
-        DROP WORKLOAD GROUP CEODemo
-        --- Creates a workload group 'CEODemo'.
-            Create  WORKLOAD GROUP CEODemo WITH  
-        (MIN_PERCENTAGE_RESOURCE = 26 -- integer value
-            ,REQUEST_MIN_RESOURCE_GRANT_PERCENT = 3.25 -- factor of 26 (guaranteed more than 4 concurrencies)
-        ,CAP_PERCENTAGE_RESOURCE = 100
-        )
-        --- Creates a workload Classifier 'CEODreamDemo'.
-        Create Workload Classifier CEODreamDemo with
-        (Workload_Group ='CEODemo',MemberName='asa.sql.workload02',IMPORTANCE = BELOW_NORMAL);
-    END
-    ```
-
-    > **Note**: Configuring workload containment implicitly defines a maximum level of concurrency. With a CAP_PERCENTAGE_RESOURCE set to 60% and a REQUEST_MIN_RESOURCE_GRANT_PERCENT set to 1%, up to a 60-concurrency level is allowed for the workload group. Consider the method included below for determining the maximum concurrency:
-    >
-    > [Max Concurrency] = [CAP_PERCENTAGE_RESOURCE] / [REQUEST_MIN_RESOURCE_GRANT_PERCENT]
-
-13. Let's flood the system again and see what happens for `asa.sql.workload02`. To do this, we will run an Azure Synapse Pipeline that runs a large number of queries. Select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline, which will run the `asa.sql.workload02` queries.
-
-14. In the query window, replace the script with the following to see what happened to all of the `asa.sql.workload02` queries that flooded the system, note that many more queries are now being performed in parallel for asa.sql.workload02:
-
-    ```sql
-    SELECT s.login_name, r.[Status], r.Importance, submit_time,
-    start_time ,s.session_id FROM sys.dm_pdw_exec_sessions s
-    JOIN sys.dm_pdw_exec_requests r ON s.session_id = r.session_id
-    WHERE s.login_name IN ('asa.sql.workload02') and Importance
-    is  not NULL AND r.[status] in ('Running','Suspended')
-    ORDER BY submit_time, status
-    ```
-
-15. Select **Run** from the toolbar menu to execute the SQL command.
-
-  ![The SQL results pane is shown with multiple queries being run in parallel.](media/multiple_parallel_queries_workload02.png "More than 2 queries being run in parallel")
-
-### Task 3: Monitoring with Dynamic Management Views
-
-For a programmatic experience when monitoring SQL Analytics via T-SQL, the service provides a set of Dynamic Management Views (DMVs). These views are useful when actively troubleshooting and identifying performance bottlenecks with your workload.
-
-All logins to your data warehouse are logged to `sys.dm_pdw_exec_sessions`. This DMV contains the last 10,000 logins. The `session_id` is the primary key and is assigned sequentially for each new logon.
-
-1. Navigate to the **Develop** hub.
-
-    ![The Develop menu item is highlighted.](media/develop-hub.png "Develop hub")
-
-2. From the **Develop** menu, select the + button and choose **SQL Script** from the context menu.
-
-    ![The SQL script context menu item is highlighted.](media/synapse-studio-new-sql-script.png "New SQL script")
-
-3. In the toolbar menu, connect to the **SQL Pool** database to execute the query.
-
-    ![The connect to option is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-connect.png "Query toolbar")
-
-4. In the query window, replace the script with the following:
-
-    ```sql
-    SELECT * FROM sys.dm_pdw_exec_sessions where status <> 'Closed' and session_id <> session_id();
-    ```
-
-    All queries executed on SQL pool are logged to `sys.dm_pdw_exec_requests`. This DMV contains the last 10,000 queries executed. The `request_id` uniquely identifies each query and is the primary key for this DMV. The `request_id` is assigned sequentially for each new query and is prefixed with `QID`, which stands for query ID. Querying this DMV for a given `session_id` shows all queries for a given logon.
-
-5. Select **Run** from the toolbar menu to execute the SQL command.
-
-6. Let's flood the system with queries to create operations to monitor. To do this, we will run a Azure Synapse Pipeline which triggers queries. Select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline, which will run / trigger  `asa.sql.workload02` queries. **Let this pipeline run for 30 seconds to 1 minute, then cancel the run recursively**.
-
-7. In the query window, replace the script with the following:
-
-    ```sql
-    SELECT *
-    FROM sys.dm_pdw_exec_requests
-    WHERE status not in ('Completed','Failed','Cancelled')
-      AND session_id <> session_id()
-    ORDER BY submit_time DESC;
-    ```
-
-8. Select **Run** from the toolbar menu to execute the SQL command. You should see a list of sessions in the query results similar to the following. **Note the `Request_ID` of a query** in the results that you would like to investigate (*keep this value in a text editor for a later step*):
-
-    ![Active query results.](media/query-active-requests-results.png "Query results")
-
-9. As an alternative, you can execute the following SQL command to find the top 10 longest running queries.
-
-    ```sql
-    SELECT TOP 10 *
-    FROM sys.dm_pdw_exec_requests
-    ORDER BY total_elapsed_time DESC;
-    ```
-
-10. To simplify the lookup of a query in the `sys.dm_pdw_exec_requests` table, use `LABEL` to assign a comment to your query, which can be looked up in the `sys.dm_pdw_exec_requests` view. To test using the labels, replace the script in the query window with the following:
-
-    ```sql
-    SELECT *
-    FROM sys.tables
-    OPTION (LABEL = 'My Query');
-    ```
-
-11. Select **Run** from the toolbar menu to execute the SQL command.
-
-12. In the query window, replace the script with the following to filter the results with the label, `My Query`.
-
-    ```sql
-    -- Find a query with the Label 'My Query'
-    -- Use brackets when querying the label column, as it is a key word
-    SELECT  *
-    FROM sys.dm_pdw_exec_requests
-    WHERE [label] = 'My Query';
-    ```
-
-13. Select **Run** from the toolbar menu to execute the SQL command. You should see the previously run query in the results view.
-
-14. In the query window, replace the script with the following to retrieve the query's distributed SQL (DSQL) plan from `sys.dm_pdw_request_steps`. **Be sure to replace** the `QID#####` with the `Request_ID` you noted in Step 8:
-
-    ```sql
-    SELECT * FROM sys.dm_pdw_request_steps
-    WHERE request_id = 'QID####'
-    ORDER BY step_index;
-    ```
-
-15. Select **Run** from the toolbar menu to execute the SQL command. You should see results showing the distributed query plan steps for the specified request:
-
-    ![The query results are displayed.](media/sql-dsql-plan-results.png "Query results")
-
-    > When a DSQL plan is taking longer than expected, the cause can be a complex plan with many DSQL steps or just one step taking a long time. If the plan is many steps with several move operations, consider optimizing your table distributions to reduce data movement.
-
-### Task 4: Orchestration Monitoring with the Monitor Hub
-
-1. Let's run a pipeline to monitor its execution in the next step. To do this, select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline.
-
-    ![The add trigger and trigger now menu items are highlighted.](media/ex7-task4-01.png "Add trigger")
-
-2. Navigate to the `Monitor` hub. Then select **Pipeline runs** to get a list of pipelines that ran during the last 24 hours. Observe the Pipeline status.
-
-    ![The pipeline runs blade is displayed within the Monitor hub.](media/ex7-task4-02.png "Monitor - Pipeline runs")
-
-3. Hover over the running pipeline and select **Cancel** to cancel the execution of the current instance of the pipeline.
-
-    ![The Cancel option is highlighted.](media/ex7-task4-03.png "Cancel")
-
-### Task 5: Monitoring SQL Requests with the Monitor Hub
-
-1. Let's run a pipeline to monitor its execution in the next step. To do this, select the `Integrate` item from the left menu. **Run** the **Exercise 8 - Execute Business Analyst Queries** Pipeline.
-
-    ![The add trigger and trigger now menu items are highlighted.](media/ex7-task5-01.png "Add trigger")
-
-2. Navigate to the `Monitor` hub. Then select **SQL requests** to get a list of SQL requests that ran during the last 24 hours.
-
-3. Select the **Pool** filter and select your SQL Pool. Observe the `Request Submitter`, `Submit Time`, `Duration`, and `Queued Duration` values.
-
-    ![The SQL requests blade is displayed within the Monitor hub.](media/ex7-task5-02.png "Monitor - SQL requests")
-
-4. Hover onto a SQL Request log and select `Request Content` to access the actual T-SQL command executed as part of the SQL Request.
-
-    ![The request content link is displayed over a SQL request.](media/ex7-task5-03.png "SQL requests")
-
-5. You may now return to the **Monitor** hub and cancel the in-progress pipeline run.
-  
 ## After the hands-on lab
 
 **Duration**: 5 minutes
