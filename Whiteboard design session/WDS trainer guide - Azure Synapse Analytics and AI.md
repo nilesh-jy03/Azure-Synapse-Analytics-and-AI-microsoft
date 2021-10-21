@@ -840,7 +840,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 4. WWI have heard of serverless querying, does Azure offer this? Does it support querying the data at the scale of WWI and what formats does it support? Would this be appropriate for supporting WWI dashboards or reports?
 
    - Azure Synapse Analytics support serverless querying via the serverless SQL pool.
-   - serverless SQL pool in Azure Synapse Analytics is an always available SQL endpoint that provides T-SQL querying over high scale data in Azure Storage, and is ideal for ad hoc or bursty workloads.
+   - The serverless SQL pool in Azure Synapse Analytics is an always available SQL endpoint that provides T-SQL querying over high scale data in Azure Storage, and is ideal for ad hoc or bursty workloads.
    - Supports data in various formats (Parquet, CSV, JSON)
    - It would be appropriate for dashboards and reports, as it supports Power BI and can be used refresh dashboard datasets. It is also appropriate for basic data discovery and exploration and supporting "single query ETL" that  transforms Azure Storage based data in a massively parallel fashion.
 
