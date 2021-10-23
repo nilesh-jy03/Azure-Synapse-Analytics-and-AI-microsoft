@@ -385,12 +385,12 @@ foreach($path in $pathsAndCounts.Keys){
 }
 
 $asaArtifacts = [ordered]@{
-        "asamcw_wwi_salesmall_workload1_asa" = "datasets"                
-        "asamcw_wwi_salesmall_workload2_asa" = "datasets" 
-        "asamcw_product_csv" = "datasets"                
-        "asamcw_product_asa" = "datasets"   
+        "asamcw_wwi_salesmall_workload1_asa" = "datasets"
+        "asamcw_wwi_salesmall_workload2_asa" = "datasets"
+        "asamcw_product_csv" = "datasets"
+        "asamcw_product_asa" = "datasets"
         "ASAMCW - Exercise 2 - Copy Product Information" = "pipelines"
-        "ASAMCW - Exercise 7 - ExecuteBusinessAnalystQueries" = "pipelines"   
+        "ASAMCW - Exercise 7 - ExecuteBusinessAnalystQueries" = "pipelines"
         "ASAMCW - Exercise 7 - ExecuteDataAnalystAndCEOQueries" = "pipelines"
         "$($keyVaultName)" = "linkedServices"
         "$($dataLakeAccountName)" = "linkedServices"

@@ -54,10 +54,12 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Row level security](#task-2-row-level-security)
     - [Task 3: Dynamic data masking](#task-3-dynamic-data-masking)
   - [Exercise 6: Machine Learning](#exercise-6-machine-learning)
-    - [Task 1: Create a SQL Datastore and source Dataset: Portal](#task-1-create-a-sql-datastore-and-source-dataset-portal)
-    - [Task 2: Create compute infrastructure](#task-2-create-compute-infrastructure)
-    - [Task 3: Use a notebook in AML Studio to prepare data and create a Product Seasonality Classifier model using XGBoost](#task-3-use-a-notebook-in-aml-studio-to-prepare-data-and-create-a-product-seasonality-classifier-model-using-xgboost)
-    - [Task 4: Leverage Automated ML to create and deploy a Product Seasonality Classifier model](#task-4-leverage-automated-ml-to-create-and-deploy-a-product-seasonality-classifier-model)
+    - [Task 1: Grant Contributor rights to the Azure Machine Learning Workspace to the Synapse Workspace Managed Identity](#task-1-grant-contributor-rights-to-the-azure-machine-learning-workspace-to-the-synapse-workspace-managed-identity)
+    - [Task 2: Create a linked service to the Azure Machine Learning workspace](#task-2-create-a-linked-service-to-the-azure-machine-learning-workspace)
+    - [Task 3: Prepare data for model training using a Synapse notebook](#task-3-prepare-data-for-model-training-using-a-synapse-notebook)
+    - [Task 4: Leverage the Azure Machine Learning integration to train a regression model](#task-4-leverage-the-azure-machine-learning-integration-to-train-a-regression-model)
+    - [Task 5: Review the experiment results in Azure Machine Learning Studio](#task-5-review-the-experiment-results-in-azure-machine-learning-studio)
+    - [Task 6: Enrich data in a SQL pool table using a trained model from Azure Machine Learning](#task-6-enrich-data-in-a-sql-pool-table-using-a-trained-model-from-azure-machine-learning)
   - [Exercise 7: Monitoring](#exercise-7-monitoring)
     - [Task 1: Workload importance](#task-1-workload-importance)
     - [Task 2: Workload isolation](#task-2-workload-isolation)
@@ -1272,185 +1274,232 @@ As an alternative to column level security, SQL Administrators also have the opt
 
 Using Azure Synapse Analytics, data scientists are no longer required to use separate tooling to create and deploy machine learning models.
 
-In this exercise, you will create multiple machine learning models. You will learn how to consume these models in your notebook. You will also deploy a model as a web service to Azure Container Instances and consume the service.
+In this exercise, you will create a regression model to predict product forecast using AutoML. You will use  the seamless integration with Azure Machine Learning to train and consume this model.
 
-### Task 1: Create a SQL Datastore and source Dataset: Portal
+### Task 1: Grant Contributor rights to the Azure Machine Learning Workspace to the Synapse Workspace Managed Identity
 
-1. Open the lab resource group, locate and open the **amlworkspace{{suffix}}** Machine Learning resource.
+Azure Synapse Analytics supports the concept of a Managed Identity. This identity is automatically created when the Synapse Workspace is deployed and represents the Azure Synapse Analytics workspace when interacting with other Azure Resources. Data pipelines defined within Azure Synapse Analytics will run under the context of this identity; therefore, it must be granted appropriate permissions to all the integrations contained within the pipeline. These permission requirements are equally valid for the Azure Machine Learning integration.
 
-    ![The lab resource group is shown with the Machine Learning resource selected](media/resourcelist_amlstudio.png "Machine learning resource")
+In this task, the Synapse Workspace Managed Identity will be granted **Contributor** rights to the Azure Machine Learning workspace.
 
-2. On the **Overview** screen of the Machine Learning resource, select the **Studio web URL** link.
+1. In the Azure Portal, open the lab resource group, then select the Machine Learning resource named amlworkspace{SUFFIX}.
 
-    ![The machine learning resource overview screen is selected with the Studio web URL link highlighted.](media/machinelearning_overview.png "Machine learning overview screen")
+2. From the left menu, select **Access control (IAM)**
 
-3. From the left menu of **Azure Machine Learning Studio**, select the **Datastores** item.
+3. Expand the Add button and choose **Add role assignment**.
 
-    ![The Machine Learning Studio menu is shown with the Datastores item highlighted](media/amlstudio_datastores_menu.png "AML Studio menu")
+    ![The AML resource screen displays with Access control (IAM) selected from the left menu. The Add button is expanded on the toolbar with the Add role assignment highlighted from the list of options.](media/amlworkspace_iam_addrole_menu.png "IAM Add role assignment")
 
-4. On the **Datastores** screen top menu, select **+ New datastore**.
+4. On the **Add role assignment** screen, select **Contributor** from the list, then choose **Next**.
 
-5. On the **New datastore** blade, configure it as follows and select **Create**:
+    ![The AML resource Add role assignment screen displays with the Role tab selected. The Contributor role is highlighted in the list as well as the Next button.](media/amlworkspace_iam_roleselection.png "IAM role selection")
+
+5. On the **Add role assignment** Members tab, select **Managed identity** for the **Assign access to** field. Then, select the **+ Select members** link beneath the **Members** field.
+
+    ![The AML resource role assignment screen displays with the Members tab selected. The Managed identify option is chosen for the Assign access to field and the Select members link is highlighted.](media/amlworkspace_iam_memberstab.png "Add role assignment Members")
+
+6. On the **Select managed identities** blade, choose the **Managed identity** type of Synapse workspace, then select the lab workspace (asaworkspace{SUFFIX}) from the listing. Choose **Select**.
+
+    ![The Select managed identities blade displays with the Managed identity field set to Synapse workspace. The asaworkspace{SUFFIX} workspace is selected. The Select button is highlighted.](media/amlworkspace_iam_selectmanagedidentity.png "Select managed identities")
+
+7. Back on the role assignment blade, select **Review + assign**, then **Review + assign** once more.
+
+### Task 2: Create a linked service to the Azure Machine Learning workspace
+
+The Azure Synapse Analytics managed identity now has Contributor access to the Azure Machine Learning Workspace. To complete the integration between these products, we will establish a linked service between both resources.
+
+1. Return to **Synapse Studio**.
+
+2. From the left menu, select the **Manage** hub.
+
+3. From the Manage hub menu, select **Linked services**, then select **+ New** from the toolbar menu.
+
+    ![Synapse Studio displays with the Manage hub selected from the left menu, the Linked services item chosen from the center menu and the + New button highlighted in the toolbar.](media/new_linked_service_menu.png "New Linked service")
+
+4. On the **New linked service** blade, search for and select **Azure Machine Learning**. Select **Continue**.
+
+    ![The New linked service blade displays with Azure Machine Learning entered in the search box and the Azure Machine Learning card selected from the list of results"](media/newlinkedservice_aml_selection.png "New Linked service type selection")
+
+5. On the **New linked service (Azure Machine Learning)** blade, fill the form with the values specified below, then select the **Create** button. Values not listed in the table below should retain their default value.
 
     | Field | Value |
-    |--------------|---------------|
-    | New datastore (name) | sqlpool01 |
-    | Datastore type | Azure SQL database |
-    | Account selection method | From Azure subscription |
-    | Subscription ID | Select the lab subscription. |
-    | Server name / database name  | Select asaworkspace{{suffix}}/SQLPool01. |
-    | Authentication type | SQL authentication |
-    | User ID | asa.sql.admin |
-    | Password | The SQL Admin password you chose when deploying the lab resources. |
+    |-------|-------|
+    | Name | Enter `azuremachinelearning`. |
+    | Azure subscription | Select the lab subscription. |
+    | Azure Machine Learning workspace name | Select **amlworkspace{SUFFIX}**. |
 
-    ![The new datastore blade is shown populated with the preceding values.](media/amlstudio_sqlpooldatasource.png "New datastore blade")
+    ![The New linked service (Azure Machine Learning) form displays populated with the preceding values.](media/amllinkedserviceform.png "New linked service (Azure Machine Learning)")
 
-6. From the left menu, select **Datasets**, and with the **Registered datasets** tab selected, expand the **+ Create dataset** button and select **From datastore**.
+6. Select the **Publish all** button from the Synapse Studio toolbar, then select **Publish** on the confirmation blade.
 
-    ![The Datasets screen is displayed with the +Create dataset button highlighted.](media/createfirstamldataset.png "AML Studio Datasets screen")
+   ![Synapse Studio displays with the Publish all button highlighted on the toolbar.](media/publishall_amllinkedservice.png "Publish all")
 
-7. In the **Create dataset from datastore** Basic info form, name the dataset **AggregatedProductSeasonality** and select **Next**.
+### Task 3: Prepare data for model training using a Synapse notebook
 
-    ![The basic info form is displayed populated with the preceding values.](media/createdataset_basicinfo.png "Dataset basic info form")
+we need to create a Spark table as a starting point for the Machine Learning model training process.
 
-8. On the **Datastore selection** form, select **Previously created datasource**, choose **sqlpool01** from the list and select the **Select datastore** button.
+1. In Synapse Studio, select the **Develop** hub. Then, expand the **+** menu and choose the **Notebook** item.
 
-    ![The Datastore selection form is displayed as described above.](media/amldatasetselectdatasource.png "The Datastore selection form")
+    ![Synapse Studio displays with the Develop hub selected in the left menu, the + menu expanded and the Notebook item highlighted.](media/synapse_new_notebook_menu.png "New Synapse Notebook")
 
-9. In the next **Datastore selection** form, enter the following **SQL query**. Then expand the **Advanced settings** and enter **100** for the **Query timeout (seconds)** value. Select **Next**:
+2. In the Synapse Notebook, ensure you attach to **SparkPool01**, then in the first cell, paste the following code. Ensure you replace **{SUFFIX}** with the appropriate value for your lab. This table serves as the training data set for our regression model that will predict the product forecast. Run this cell to create the Spark table.
 
-    ```sql
-    SELECT P.ProductId,P.Seasonality,S.TransactionDateId,COUNT(*) as TransactionItemsCount
-    FROM wwi_mcw.SaleSmall S
-    JOIN wwi_mcw.Product P ON S.ProductId = P.ProductId
-    where TransactionDateId between 20190101 and 20191231
-    GROUP BY P.ProductId ,P.Seasonality,S.TransactionDateId
+    ```Python
+    import pyspark.sql.functions as f
+
+    df = spark.read.load('abfss://wwi-02@asadatalake{SUFFIX}.dfs.core.windows.net/sale-small/Year=2019/Quarter=Q4/Month=12/*/*.parquet', format='parquet')
+    
+    df_consolidated = df.groupBy('ProductId', 'TransactionDate', 'Hour').agg(f.sum('Quantity').alias('TotalQuantity'))
+    
+    # Create a Spark table with aggregated sales data to serve as the training dataset
+    df_consolidated.write.mode("overwrite").saveAsTable("default.SaleConsolidated")
     ```
 
-    ![The datastore selection form is displayed populated with the preceding query.](media/aml_dataset_datastoreselectionquery.png "Dataset query details")
+3. In Synapse Studio, select the **Data** hub from the left menu. On the **Workspace** tab, expand the **Databases** node, then expand the **default (Spark)** node. Expand the **Tables** item, and you should see the **saleconsolidated** table that was created in the following step. If you don't see this table, expand the action menu next to the **Table** node and select the **Refresh** item.
 
-10. The **Settings and preview** data table will be displayed after a few moments. Review this data, then select the **Next** button.
+    ![The Data hub screen displays with the Workspace tab selected. The Databases, default (Spark), and Tables nodes are expanded. The action menu next to Tables is expanded revealing the Refresh item. The salesconsolidated table is highlighted.](media/synapse_salesconsolidated_sparktable.png "Spark table")
 
-    ![The settings and preview screen is displayed showing a table of data.](media/amlstudio_dataset_settingsandpreview.png "The Settings and Preview screen")
+4. You may close and discard the notebook.
 
-11. Review the **Schema** field listing, then select **Next**.
+### Task 4: Leverage the Azure Machine Learning integration to train a regression model
 
-    ![The Schema screen is displayed showing a listing of columns and their types.](media/amlstudio_dataset_schema.png "The dataset Schema field listing")
+1. Next to the **saleconsolidated** Spark table, expand the actions menu, and select **Machine Learning**, then **Train a new model**.
 
-12. On the **Confirm details** screen, select **Create**.
+    ![The actions menu next to the saleconsolidated Spark table is expanded with the Machine Learning item selected and the Train new model highlighted.](media/aml_train_new_model_menu.png "Train new model")
 
-    ![The dataset Confirm details screen is displayed showing a summary of the choices from the previous steps.](media/aml_dataset_confirmdetails.png "The dataset Confirm details screen")
+2. In the **Train a new model** blade, select **Regression** as the model type, then select **Continue**.
 
-### Task 2: Create compute infrastructure
+    ![The Train a new model blade displays with the Regression item highlighted.](media/aml_model_type_selection.png "Regression model selection")
 
-1. From the left menu of Machine Learning Studio, select **Compute**.
-
-2. On the **Compute** screen with the **Compute instances** tab selected. Choose the **Create** button.
-
-    ![The Azure Machine Learning Studio compute screen is displayed, with the compute instances tab selected, and the Create button highlighted.](media/aml_createcomputebutton.png "Azure Machine Learning Compute screen")
-
-3. On the **Create compute instance**, **Select virtual machine** form, configure it as follows, then select **Next**:
+3. In the **Train a new model (Regression)** blade, fill the values as follows. Fields not listed in the table below retain their default values. Copy the value of the **Best model name** to a text editor for use later in this lab. When complete, select the **Continue** button. This form configures the AutoML experiment.
 
     | Field | Value |
-    |--------------|---------------|
-    | Virtual machine type | CPU |
-    | Virtual machine size | Search for and select Standard_DS3_v2. |
+    |--------|------|
+    | Azure Machine Learning workspace | Select **amlworkspace{SUFFIX}**. |
+    | Target column | Select **TotalQuantity (long)**. |
+    | Apache Spark pool | Select **SparkPool01**. |
 
-    ![The new compute instance virtual machine form is displayed populated with the preceding values.](media/aml_newcomputeform.png "The new compute instance virtual machine form")
+    ![The Train a new model (Regression) blade displays populated with the preceding values.](media/aml_trainnewmodelregressionexperiment.png "Regression experiment configuration")
 
-4. On the **Configure Settings** form, enter a globally unique **Compute name** of your choice, and select **Create**.
+4. In the **Configure regression model** form, set the Maximum training job time (hours) to `0.25`, and the **ONNX model compatibility** to **Enable**. This will let the experiment run for 15 minutes and output an ONNX compatible model.
 
-    ![The new compute instance settings form is displayed populated with a compute name](media/aml_newcomputeform_settings.png "The new compute instance settings form")
+    ![The Configure regression model form displays with the training time set to 0.25 and ONNX model compatibility set to Enable.](media/aml_regressionmodel_config.png "Configure regression model")
 
-5. Select the **Compute clusters** tab, and select **Create**.
+5. Select **Open in notebook**. This will display the generated experiment code that integrates with Azure Machine Learning. Alternatively, you could have chosen **Create run** and have it issue the Automated Machine Learning experiment directly with the linked Azure Machine Learning workspace without ever having to look at the code.
 
-6. On the **New compute cluster**, **Select virtual machine** form, configure the virtual machine as follows, then select **Next**:
+6. After reviewing the code, select **Run all** from the top toolbar menu.
 
-    | Field | Value |
-    |--------------|---------------|
-    | Virtual machine priority | Dedicated |
-    | Virtual machine type | CPU |
-    | Virtual machine size | Search for and select Standard_DS3_v2. |
+    >**Note**: This experiment will take up to 20 minutes to run. Proceed to the following exercise and return to this point after the notebook run has completed. Alternatively, the output of the experiment contains a link to the Azure Machine Learning workspace where you can view the details of the currently running experiment.
 
-    ![The New compute cluster virtual machine form is displayed with the preceding values.](media/aml_cluster_settings.png "The New compute cluster virtual machine form")
+    ![A cell in the Synapse notebook displays with its output, a link to the Azure Machine Learning portal to view the experiment run.](media/amlnotebook_amllinkoutput.png "Link to Azure Machine Learning experiment")
 
-7. On the **Configure Settings** form, configure it as follows, then select **Create**:
+### Task 5: Review the experiment results in Azure Machine Learning Studio
 
-    | Field | Value |
-    |--------------|---------------|
-    | Compute name | automlcluster |
-    | Minimum number of nodes | 0 |
-    | Maximum number of nodes | 3 |
-    | Idle seconds before scale down | 120 |
+1. In the Azure Portal, open the lab resource group and select the **amlworkspace{SUFFIX}** Azure Machine Learning resource. Select **Launch studio** to open the Azure Machine Learning Studio.
 
-    ![The new compute cluster configure settings form is displayed populated with the preceding values.](media/aml_cluster_configsettings.png "The new compute cluster Configure settings form")
+2. The notebook generated in the previous task registered the best trained model for the experiment. You can locate the model by selecting **Models** from the left menu. Note the model in the list, this is the model that was trained in the previous task.
 
-### Task 3: Use a notebook in AML Studio to prepare data and create a Product Seasonality Classifier model using XGBoost
+    ![The Azure Machine Learning Studio interface displays with the Models item selected from the left menu. The model that was trained in the previous task is highlighed.](media/amlstudio_modelslisting.png "Model List")
 
-1. In Azure Machine Learning (AML) Studio, select **Notebooks** from the left menu.
+3. From the left menu, select the **Automated ML** item, then in the **Recent Automated ML runs** select the **Display name** link.
 
-2. In the **Notebooks** pane, select the **Upload** icon from the toolbar.
+    ![Automated ML is selected from the left menu and the Display name link is highlighted.](media/aml_automl_experimentlink.png "Automated ML Display name link")
 
-    ![In Azure Machine Learning Studio, the Notebooks item is selected from the left menu, and the Upload Icon is highlighted in the Notebooks panel.](media/aml_uploadnotebook_menu.png "Upload notebook")
+4. On the Automated ML screen, locate the **Best model summary** card that identifies the best model identified for the run. This should match the model that was registered in the workspace.
 
-3. In the **Open** dialog, select **Hands-on lab/artifacts/ProductSeasonality_sklearn.ipynb**. When prompted, check the boxes to **Overwrite if already exists** and **I trust contents of this file** and select **Upload**.
+    ![The Best model summary card displays with information regarding the best trained model.](media/aml_best_model_summary.png "Best model summary")
 
-    ![A dialog is displayed with the Overwrite if already exists and the I trust contents of this file checkboxes checked.](media/aml_notebook_uploadwarning.png "File upload warning dialog")
+5. Select the **Models** tab for the Automated ML run. This will display a listing of candidate models that were evaluated. The best model is located at the top of the list.
 
-4. In the top toolbar of the notebook, expand the **Editors** item, and select **Edit in Jupyter**.
+    ![The run details screen displays with the Models tab selected. A list of candidate models displays for the automated machine learning run. The best model is highlighted in the listing.](media/automl_candidate_model_list.png "Candidate Automated ML model listing")
 
-    ![On the notebook toolbar, the Editors item is expanded with the Edit in Jupyter item selected.](media/aml_notebook_editinjupyter.png "Edit in Jupyter")
+### Task 6: Enrich data in a SQL pool table using a trained model from Azure Machine Learning
 
-5. Review and run each cell in the notebook individually to gain understanding of the functionality being demonstrated.
+In **SQLPool01**, there exists a table named **wwi_mcw.ProductQuantityForecast**. This table holds a handful of rows of data on which WWI would like to make product forecast predictions. We will leverage the machine learning model that was trained and registered from the Automated Machine Learning experiment to enrich this data with a forecasted prediction value.
 
->**Note**: Running this notebook in its entirety is required for the next task.
+1. In Synapse Studio, investigate the **wwi_mcw.ProductQuantityForecast** table by selecting the **Data** hub from the left menu. On the **Workspace** tab, expand the **Databases**, **SQLPool01**, and **Tables** nodes. Engage the actions menu next to the **wwi_mcw.ProductQuantityForecast** table, and select **New SQL script**, then **Select TOP 100 rows**.
 
-### Task 4: Leverage Automated ML to create and deploy a Product Seasonality Classifier model
+    ![In Synapse Studio, the Data hub is selected from the left menu. The Workspaces tab is selected with the Databases, SQLPool01, and Tables nodes expanded. The action menu is expanded next to the ProductQuantityForecast table with New SQL script and Select TOP 100 rows selected.](media/newsqlquery_productquatnityforecast.png "Select TOP 100 rows")
 
-1. In Azure Machine Learning (AML) Studio, select **Experiments** from the left menu, then expand the **+ Create** button, and select **Automated ML run**.
+2. Review the data in the table. The columns are:
 
-    ![The AML Studio Experiments screen is shown with the Create button expanded and the Automated ML run item selected.](media/aml_experiment_create.png "The AML Studio Experiments screen")
+    | Column | Description |
+    |--------|-------------|
+    | ProductId | The identifier of the product for which we want to forecast quantity. |
+    | TransactionDate | The future date for which we want to predict. |
+    | Hour | The hour of the future date for which we want to predict. |
+    | TotalQuantity | The value of the prediction of quantity of the product for the specified product, date, and hour. |
 
-2. In the previous task, we registered our PCA dataframe (named **pcadata**) to use with Auto ML. Select **pcadata** from the list and select **Next**.
+3. Note the predicted **Total Quantity** value is 0. We will leverage our trained regression model to populate this value.
 
-    ![On the Select dataset screen, the pcadata item is selected from the dataset list.](media/aml_automl_datasetselection.png "The select dataset form is displayed")
+    ![The results of the ProductQuantityForecast query displays. The TotalQuantity column is populated with the value of 0.](media/productquantityforecast_before.png "ProductQuantityForecast table")
 
-3. On the **Configure run** screen, select the **Create a new compute** link beneath the **Select compute cluster** field.
+4. Expand the actions menu next to the **wwi_mcw.ProductQuantityForecast** table, this time select **Machine Learning**, then **Predict with a model**.
 
-4. Back on the **Configure run** form, name the experiment **ProductSeasonalityClassifier**, select **Seasonality** as the **Target column** and select **automlcluster** as the compute cluster. Select **Next**.
+   ![The actions menu is expanded next to the ProductQuantityForecast table. The Machine Learning and Predict with a model items are selected.](media/sqlpool_predictwithamodel_menu.png "Predict with a model")
 
-    ![The Configure run form is displayed populated with the preceding values.](media/automl_experiment_configurerun.png "The Configure run form")
+5. On the **Predict with a model** blade, ensure the proper Azure Machine Learning workspace is selected (amlworkspace{SUFFIX}). The best model from our experiment run is listed in the table. Choose the model, then select **Continue**.
 
-5. On the **Select task type** screen, select **Classification**, then choose **Finish**.
+    ![The Predict with a model blade displays with the best model selected from the list.](media/predictwithmodel_modelselection.png "Select prediction model")
 
-    ![The Select task type screen is displayed with the Classification item selected.](media/aml_automlrun_tasktypeform.png "The Select task type screen")
+6. The Input and Output mapping displays, because the column names from the target table and the table used for model training match, you can leave all mappings as suggested by default. Select **Continue** to advance.
 
-6. The experiment will then be run. It will take approximately 20-25 minutes for it to complete. Once it has completed, it will display the run results details. In the **Best model summary** box, select the **Algorithm name** link.
+    ![The Input and Output mapping displays retaining the default values.](media/inputoutputmapping.png "Input and Output mapping")
 
-    ![The Run is shown as completed and the link below Algorithm name in the Best model summary box is selected.](media/aml_automl_run_bestmodel_details.png "Completed AutoML run details")
-
-7. On the Model run screen, select **Deploy** from the top toolbar.
-
-    ![The specific model run screen is shown with the Deploy button selected from the top toolbar.](media/aml_automl_deploybestmodel.png "The best model run")
-
-8. On the **Deploy a model** blade, configure the deployment as follows, then select **Deploy**:
+7. The final step presents you with options to name the stored procedure that will perform the predictions and the table that will store the serialized form of your model. Provide the following values, then select **Deploy model + open script**.
 
     | Field | Value |
-    |--------------|---------------|
-    | Name | productseasonalityclassifier |
-    | Description | Product Seasonality Classifier. |
-    | Compute type | Azure Container Instance |
-    | Enable authentication | Off |
+    |-------|-------|
+    | Stored procedure name | Enter `[wwi_mcw].[ForecastProductQuantity]`. |
+    | Select target table | Select **Create new**. |
+    | New table | Enter `[wwi_mcw].[Model] |
 
-    ![The Deploy a model blade is shown populated with the preceding values.](media/aml_automl_deploymodelaci.png "The Deploy a model blade")
+    ![The Predict with a model blade displays populated with the aforementioned values.](media/predictwithmodel_storedproc.png "Stored procedure and model table details")
 
-9. Once deployed, the Model summary will be displayed. You can view the endpoint by selecting the **Deploy status** link.
+8. The T-SQL code that is generated will only return the results of the prediction, without actually saving them. To save the results of the prediction directly into the [wwi_mcw].[ProductQuantityForecast] table, replace the generated code with the following, be sure to replace `<your_model_id>` with the name of the best model you copied to a text editor earlier.
 
-    ![The successful model deployment was successful and the Deploy status link is highlighted.](media/aml_automl_modeldeploysuccess.png "The Model summary screen")
+    ```SQL
+    CREATE PROCEDURE wwi_mcw.ForecastProductQuantity
+    AS
+    BEGIN
 
-10. Review the details of the deployed model service endpoint.
+    SELECT
+        CAST([ProductId] AS [bigint]) AS [ProductId],
+        CAST([TransactionDate] AS [bigint]) AS [TransactionDate],
+        CAST([Hour] AS [bigint]) AS [Hour]
+    INTO [wwi_mcw].[#ProductQuantityForecast]
+    FROM [wwi_mcw].[ProductQuantityForecast];
 
-    ![The service endpoint details screen is displayed.](media/aml_automl_modelserviceendpointdetails.png "The service endpoint details screen")
+    SELECT *
+    INTO [wwi_mcw].[#Pred]
+    FROM PREDICT (MODEL = (SELECT [model] FROM [wwi_mcw].[Model] WHERE [ID] = '<your_model_id>'),
+                DATA = [wwi_mcw].[#ProductQuantityForecast],
+                RUNTIME = ONNX) WITH ([variable_out1] [real])
+
+    MERGE [wwi_mcw].[ProductQuantityForecast] AS target  
+                USING (select * from [wwi_mcw].[#Pred]) AS source (TotalQuantity, ProductId, TransactionDate, Hour)  
+            ON (target.ProductId = source.ProductId and target.TransactionDate = source.TransactionDate and target.Hour = source.Hour)  
+                WHEN MATCHED THEN
+                    UPDATE SET target.TotalQuantity = CAST(source.TotalQuantity AS [bigint]);
+    END
+    GO
+    ```
+
+9. You are now ready to perform the forecast on the TotalQuantity column. Open a new SQL script and run the following statement.
+
+    ```SQL
+    EXEC
+    wwi_mcw.ForecastProductQuantity
+
+    SELECT  
+        *
+    FROM
+        wwi_mcw.ProductQuantityForecast
+    ```
+
+10. Notice how the **TotalQuantity** values for each row are now populated with a prediction from the model.
+
+    ![The TotalQuantity field is now predicted for each product in the ProductQuantityForecast table.](media/productforecast_after.png "TotalQuantity values are predicted")
 
 ## Exercise 7: Monitoring
 
