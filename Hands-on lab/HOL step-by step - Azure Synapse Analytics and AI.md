@@ -9,7 +9,7 @@ Hands-on lab step-by-step
 </div>
 
 <div class="MCWHeader3">
-October 2020
+October 2021
 </div>
 
 
@@ -19,7 +19,7 @@ Microsoft may have patents, patent applications, trademarks, copyrights, or othe
 
 The names of manufacturers, products, or URLs are provided for informational purposes only and Microsoft makes no representations and warranties, either expressed, implied, or statutory, regarding these manufacturers or the use of the products with any Microsoft technologies. The inclusion of a manufacturer or product does not imply endorsement of Microsoft of the manufacturer or product. Links may be provided to third party sites. Such sites are not under the control of Microsoft and Microsoft is not responsible for the contents of any linked site or any link contained in a linked site, or any changes or updates to such sites. Microsoft is not responsible for webcasting or any other form of transmission received from any linked site. Microsoft is providing these links to you only as a convenience, and the inclusion of any link does not imply endorsement of Microsoft of the site or the products contained therein.
 
-© 2020 Microsoft Corporation. All rights reserved.
+© 2021 Microsoft Corporation. All rights reserved.
 
 Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/Usage/General.aspx> are trademarks of the Microsoft group of companies. All other trademarks are property of their respective owners.
 
@@ -71,7 +71,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Create and train an Azure Forms Recognizer model and setup Cognitive Search](#task-2-create-and-train-an-azure-forms-recognizer-model-and-setup-cognitive-search)
     - [Task 3: Configure a skillset with Form Recognizer](#task-3-configure-a-skillset-with-form-recognizer)
     - [Task 4: Create the Synapse Pipeline](#task-4-create-the-synapse-pipeline)
-  - [Exercise 9: Introspecting Synapse Workspace data with Azure Purview (OPTIONAL)](#exercise-9-introspecting-synapse-workspace-data-with-azure-purview-optional)
+  - [Exercise 9: Introspecting Synapse Workspace data with Azure Purview (Optional)](#exercise-9-introspecting-synapse-workspace-data-with-azure-purview-optional)
     - [Task 1: Create an Azure Purview resource](#task-1-create-an-azure-purview-resource)
     - [Task 2: Register the Azure Synapse Analytics workspace as a data source](#task-2-register-the-azure-synapse-analytics-workspace-as-a-data-source)
     - [Task 3: Grant the Azure Purview Managed Identity the required permissions to Azure Synapse Analytics assets](#task-3-grant-the-azure-purview-managed-identity-the-required-permissions-to-azure-synapse-analytics-assets)
@@ -1460,7 +1460,7 @@ In **SQLPool01**, there exists a table named **wwi_mcw.ProductQuantityForecast**
     |-------|-------|
     | Stored procedure name | Enter `[wwi_mcw].[ForecastProductQuantity]`. |
     | Select target table | Select **Create new**. |
-    | New table | Enter `[wwi_mcw].[Model] |
+    | New table | Enter `[wwi_mcw].[Model]` |
 
     ![The Predict with a model blade displays populated with the aforementioned values.](media/predictwithmodel_storedproc.png "Stored procedure and model table details")
 
@@ -2330,7 +2330,7 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The tabular results of the previous query is shown.](media/ex5-task4-047.png "SQL Query results")
 
-## Exercise 9: Introspecting Synapse Workspace data with Azure Purview (OPTIONAL)
+## Exercise 9: Introspecting Synapse Workspace data with Azure Purview (Optional)
 
 **Duration**: 40 minutes
 
