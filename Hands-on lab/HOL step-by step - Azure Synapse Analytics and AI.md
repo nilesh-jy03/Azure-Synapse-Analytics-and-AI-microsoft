@@ -71,13 +71,14 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Create and train an Azure Forms Recognizer model and setup Cognitive Search](#task-2-create-and-train-an-azure-forms-recognizer-model-and-setup-cognitive-search)
     - [Task 3: Configure a skillset with Form Recognizer](#task-3-configure-a-skillset-with-form-recognizer)
     - [Task 4: Create the Synapse Pipeline](#task-4-create-the-synapse-pipeline)
-  - [Exercise 9: Introspecting Synapse Workspace data with Azure Purview](#exercise-9-introspecting-synapse-workspace-data-with-azure-purview)
+  - [Exercise 9: Introspecting Synapse Workspace data with Azure Purview (OPTIONAL)](#exercise-9-introspecting-synapse-workspace-data-with-azure-purview-optional)
     - [Task 1: Create an Azure Purview resource](#task-1-create-an-azure-purview-resource)
     - [Task 2: Register the Azure Synapse Analytics workspace as a data source](#task-2-register-the-azure-synapse-analytics-workspace-as-a-data-source)
     - [Task 3: Grant the Azure Purview Managed Identity the required permissions to Azure Synapse Analytics assets](#task-3-grant-the-azure-purview-managed-identity-the-required-permissions-to-azure-synapse-analytics-assets)
     - [Task 4: Set up a scan of the Azure Synapse Analytics dedicated SQL Pool](#task-4-set-up-a-scan-of-the-azure-synapse-analytics-dedicated-sql-pool)
     - [Task 5: Review the results of the scan in the data catalog](#task-5-review-the-results-of-the-scan-in-the-data-catalog)
     - [Task 6: Integrate Purview with Azure Synapse Analytics](#task-6-integrate-purview-with-azure-synapse-analytics)
+    - [Task 7: Observe Synapse Pipeline data lineage information in Azure Purview](#task-7-observe-synapse-pipeline-data-lineage-information-in-azure-purview)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 <!-- /TOC -->
@@ -118,7 +119,7 @@ This lab explores the cold data scenario of ingesting various types of raw data 
 
 9. [Postman](https://www.postman.com/downloads/)
 
-10. [Ensure the Microsoft.Sql resource provider is registered in your Azure Subscription](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types). 
+10. [Ensure the Microsoft.Sql resource provider is registered in your Azure Subscription](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types).
 
 ## Before the hands-on lab
 
@@ -2329,11 +2330,13 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
     ![The tabular results of the previous query is shown.](media/ex5-task4-047.png "SQL Query results")
 
-## Exercise 9: Introspecting Synapse Workspace data with Azure Purview
+## Exercise 9: Introspecting Synapse Workspace data with Azure Purview (OPTIONAL)
+
+**Duration**: 40 minutes
 
 Azure Purview is a unified data governance service that helps manage and govern on-premises, multi-cloud, and software-as-a-service (SaaS) data. Azure Purview discovers, classifies, catalogs, and documents data creating a holistic, up-to-date map of your data landscape in an automated fashion.
 
-In this exercise, we'll create an Azure Purview resource and scan the Synapse Analytics workspace.
+In this exercise, we'll create an Azure Purview resource and scan the Synapse Analytics workspace. Then, we'll integrate Purview with Azure Synapse Analytics to view the data lineage of a pipeline run.
 
 ### Task 1: Create an Azure Purview resource
 
@@ -2474,7 +2477,7 @@ In this exercise, we'll create an Azure Purview resource and scan the Synapse An
 
 ### Task 6: Integrate Purview with Azure Synapse Analytics
 
-1. In Purview Studio, select **Data map** from the left menu. Select **Collections** from the middle menu, and ensure the **wwidata{SUFFIX}** collection is selected in the listing. On the **wwidata{SUFFIX}** collection screen, select the **Role assignments** tab. 
+1. In Purview Studio, select **Data map** from the left menu. Select **Collections** from the middle menu, and ensure the **wwidata{SUFFIX}** collection is selected in the listing. On the **wwidata{SUFFIX}** collection screen, select the **Role assignments** tab.
 
     ![The Purview Studio interface displays with Data map selected from the left menu, Collections chosen from the center menu, and the wwidata{SUFFIX} collection is selected and the **Role assignments** tab is highlighted.](media/purview_datamap_collections.png "Purview collections")
 
@@ -2498,28 +2501,31 @@ In this exercise, we'll create an Azure Purview resource and scan the Synapse An
 
     ![The connected Purview account details display with the Data Lineage - Synapse Pipeline item shows connected.](media/synapseconnectedpurviewaccount_datalineageenabled.png "Data Lineage - Synapse Pipeline connected")
 
-7. To view this integration in action, select the **Integrate** hub, expand the **Pipelines** and open the **ASAMCW - Exercise 2 - Copy Campaign Analytics Data** pipeline. From the top toolbar menu, expand **Add trigger** and select **Trigger now**. On the **Pipeline run** blade, select **OK** to kick off the run.
+### Task 7: Observe Synapse Pipeline data lineage information in Azure Purview
 
-8. Select the **Monitor** hub, wait for the pipeline run to complete, then select it to view the details of the run.
+1. To view this integration in action, select the **Integrate** hub, expand the **Pipelines** and open the **ASAMCW - Exercise 2 - Copy Campaign Analytics Data** pipeline. From the top toolbar menu, expand **Add trigger** and select **Trigger now**. On the **Pipeline run** blade, select **OK** to kick off the run.
 
-9. Data lineage is captured and pushed to the Purview account when the pipeline activity entails a COPY activity or a Data Flow. In the case of the Campaign Analytics data pipeline, it has a data flow. Select the **Lineage status** icon next to the **Data flow1** activity to see the result. It should state the status of **Succeeded**.
+2. Select the **Monitor** hub, wait for the pipeline run to complete, then select it to view the details of the run.
+
+3. Data lineage is captured and pushed to the Purview account when the pipeline activity entails a COPY activity or a Data Flow. In the case of the Campaign Analytics data pipeline, it has a data flow. Select the **Lineage status** icon next to the **Data flow1** activity to see the result. It should state the status of **Succeeded**.
 
     ![The pipeline run overview screen displays with the Lineage status icon highlighted next to the Data flow1 activity.](media/campaignanalytics_pipelinerun_lineage%20icon.png "Pipeline run details")
 
-10. Return to Purview Studio, select **Data catalog**, then choose the **Browse assets** card.
-11. On the **Browse assets** screen, select the **By source type** tab, then choose **Azure Synapse Analytics**.
+4. Return to Purview Studio, select **Data catalog**, then choose the **Browse assets** card.
+
+5. On the **Browse assets** screen, select the **By source type** tab, then choose **Azure Synapse Analytics**.
 
     ![The Browse assets screen displays with the By source type tab selected and the Azure Synapse Analytics card is highlighted.](media/purview_browseassetsbytype_synapsechoice.png "Browse assets by source type")
 
-12. Select the **asaworkspace{SUFFIX}** workspace.
+6. Select the **asaworkspace{SUFFIX}** workspace.
 
-13. A tree-view is rendered that includes the Campaign Analytics pipeline that we just ran. Select the **ASAMCW - Exercise 2 - Copy Campaign Analytics Data** pipeline from the tree-view.
+7. A tree-view is rendered that includes the Campaign Analytics pipeline that we just ran. Select the **ASAMCW - Exercise 2 - Copy Campaign Analytics Data** pipeline from the tree-view.
 
     ![The Synapse Analytics workspace tree-view is rendered in Azure Purview. The Campaign Analytics pipeline is highlighted.](media/purview_synapseworkspacerendered_pipelineselected.png "Synapse Workspace Tree-View")
 
-14. Select **Data flow1** from the list of activities of the pipeline.
+8. Select **Data flow1** from the list of activities of the pipeline.
 
-15. On the **Data flow1** details screen, select the **Lineage** tab. You can now visually see the source of the data was from the campaignanalytics.csv file and was destined for the CampaignAnalytics dedicated SQL Pool table.
+9. On the **Data flow1** details screen, select the **Lineage** tab. You can now visually see the source of the data was from the campaignanalytics.csv file and was destined for the CampaignAnalytics dedicated SQL Pool table.
 
     ![The Data flow1 lineage map is rendered indicating the csv file source and SQL pool table destination.](media/dataflowlineageinpurview.png "Data flow1 lineage")
 
