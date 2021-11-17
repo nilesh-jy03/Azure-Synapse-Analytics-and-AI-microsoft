@@ -56,13 +56,13 @@ Analyze your customer's needs.
 
 Timeframe: 15 minutes
 
-Directions:  With all participants in the session, the facilitator/SME presents an overview of the customer case study along with technical tips.
+Directions: With all participants in the session, the facilitator/SME presents an overview of the customer case study along with technical tips.
 
-1. Meet your table participants and trainer.
+1. Meet your team members and trainer.
 
-2. Read all of the directions for steps 1-3 in the student guide.
+2. Read all directions for steps 1-3 in the student guide.
 
-3. As a table team, review the following customer case study.
+3. As a team, review the following customer case study.
 
 ### Customer situation
 
@@ -76,7 +76,7 @@ They would like to combine their retail lifecycle data, including customer data,
 
 They are looking to use historical campaign and customer analytics data and make decisions for the present. Beyond these large historical data sets, they would like to use streaming tweet data from Twitter and telemetry from IoT sensors in their brick and mortar locations. In effect, they would like to use data from the present moment to inform decisions for the next moment. WWI sees an opportunity to use their data to predict the future, initially by making product recommendations.
 
-According to Peter Guerin, Chief Technical Officer (CTO), Wide World Importers has over five years of sales transaction data from Oracle, consisting of more than 30  billion rows. But that is not their only enterprise data source. They have finance data stored in SAP HANA, marketing data in Teradata, and social media data coming in from Twitter. They need a solution that allows them to discover, integrate, query, and analyze the data from all of these sources. They worry that their current catalog might be missing some internal data sources used by smaller departments. Additionally, regardless of the volume, they want to be able to execute queries across such data with results returning in seconds.
+According to Peter Guerin, Chief Technical Officer (CTO), Wide World Importers has over five years of sales transaction data from Oracle, consisting of more than 30  billion rows. But that is not their only enterprise data source. They have finance data stored in SAP HANA, marketing data in Teradata, and social media data coming in from Twitter. They need a solution that allows them to discover, integrate, query, and analyze the data from all these sources. They worry that their current catalog might be missing some internal data sources used by smaller departments. Additionally, regardless of the volume, they want to be able to execute queries across such data with results returning in seconds.
 
 In addition to those data sources, they have in-store IoT sensors producing telemetry data that track the traffic patterns of customers walking the aisles. Each store has 50 sensors, and they have 100 stores equipped to provide this real-time data. Using this data, they want to understand in which departments (or groups of aisles) people are spending most of their time and which of those they are not. They would like a solution to ensure that this data gets ingested and processed in near real-time, allowing them to quickly identify patterns that can be shared between stores. For example, as stores open on the East Coast, patterns detected in early buying behavior could inform last-minute offers and in-store product placement of products in their West Coast stores that have yet to open.
 
@@ -98,7 +98,7 @@ To bring their entire operation into perspective, Wide World Importers would lik
 
 5. Enhanced ability to discovery data using business or technical terms for business analysts.
 
-6. Minimize the number of disparate services they use across ingest, transformation, querying and storage, so that teams of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management and monitoring.
+6. Minimize the number of disparate services they use across ingest, transformation, querying and storage, so that teams of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management, and monitoring.
 
 7. Work within a single collaborative environment.
 
@@ -116,7 +116,7 @@ To bring their entire operation into perspective, Wide World Importers would lik
 
 2. WWI have seen demos from competing systems that claim to load massive datasets in seconds. Does Azure offer such a solution?
 
-3. Is it really possible to minimize the number of disparate services they use across ingest, transformation, querying and storage, so that WWI team of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management and monitoring?
+3. Is it really possible to minimize the number of disparate services they use across ingest, transformation, querying and storage, so that WWI team of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management, and monitoring?
 
 4. WWI have heard of serverless querying, does Azure offer this? Does it support querying the data at the scale of WWI and what formats does it support? Would this be appropriate for supporting WWI dashboards or reports?
 
@@ -146,15 +146,15 @@ Timeframe: 60 minutes
 
 **Business needs**
 
-Directions: With all participants at your table, answer the following questions and list the answers on a flip chart:
+Directions: With your team, answer the following questions and be prepared to present your solution to others:
 
-1. Who should you present this solution to? Who is your target customer audience? Who are the decision makers?
+1. Who will you present this solution to? Who is your target customer audience? Who are the decision makers?
 
 2. What customer business needs do you need to address with your solution?
 
 **Design**
 
-Directions: With all participants at your table, respond to the following questions on a flip chart:
+Directions: With your team, respond to the following questions:
 
 *High Level Architecture*
 
@@ -246,7 +246,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 3. One of WWI's challenges is that while multiple departments might be able to query a given table, what data they should be allowed to see depends on their department or role within the company. How could your solution support this? You should suggest three options.
 
-4. Can the solution help WWI discover, track and remediate security misconfigurations and detect threats? How?
+4. Can the solution help WWI discover, track, and remediate security misconfigurations and detect threats? How?
 
 5. Can WWI use this same solution to monitor sensitive information by enabling them to discover, classify and protect and track access to such data?
 
@@ -262,7 +262,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 **Prepare**
 
-Directions: With all participants at your table:
+Directions: As a team:
 
 1. Identify any customer needs that are not addressed with the proposed solution.
 
@@ -284,9 +284,9 @@ Timeframe: 30 minutes
 
 Directions:
 
-1. Pair with another table.
+1. Pair with another team.
 
-2. One table is the Microsoft team and the other table is the customer.
+2. One group is the Microsoft team, the other is the customer.
 
 3. The Microsoft team presents their proposed solution to the customer.
 
@@ -296,13 +296,13 @@ Directions:
 
 6. The customer team gives feedback to the Microsoft team.
 
-7. Tables switch roles and repeat Steps 2-6.
+7. Switch roles and repeat Steps 2-6.
 
 ## Wrap-up
 
 Timeframe: 15 minutes
 
-Directions: Tables reconvene with the larger group to hear the facilitator/SME share the preferred solution for the case study.
+Directions: Reconvene with the larger group to hear the facilitator/SME share the preferred solution for the case study.
 
 ## Additional references
 
