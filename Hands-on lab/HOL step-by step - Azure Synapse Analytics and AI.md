@@ -161,7 +161,7 @@ All exercises in this lab utilize the workspace Synapse Studio user interface. T
   
     ![In the resource list, the Synapse Workspace item is selected.](media/resourcelist_synapseworkspace.png "The resource group listing")
 
-5. On the **Overview** tab of the Synapse Workspace page, select the **Open Synapse Studio** card from beneath the **Getting Started** heading. Alternatively you can select the Workspace web URL link.
+5. On the **Overview** tab of the Synapse Workspace page, select the **Open Synapse Studio** card from beneath the **Getting Started** heading. Alternatively, you can select the Workspace web URL link.
 
     ![On the Synapse workspace resource screen, the Overview pane is shown with the Open Synapse Studio card highlighted. The Workspace web URL value is also highlighted.](media/workspaceresource_launchsynapsestudio.png "Launching Synapse Studio")
 
@@ -245,7 +245,7 @@ The data that we will be retrieving to populate the sale table is currently stor
 2. The sale data for each day is stored in a separate parquet file which is placed in storage following a known convention. In this lab, we are interested in populating the Sale table with only 2018 and 2019 data. Investigate the structure of the data by selecting the **Data** tab, and in the **Data** pane, select the **Linked** tab, expanding the **Azure Data Lake Storage Gen 2** item, and expanding the `asadatalake{SUFFIX}` Storage account.
 
     > **Note**: The current folder structure for daily sales data is as follows: 
-    /wwi-02/sale-small/Year=`YYYY`/Quarter=`Q#`/Month=`M`/Day=`YYYYMMDD`, where `YYYY` is the 4 digit year (eg. 2019), `Q#` represents the quarter (eg. Q1), `M` represents the numerical month (eg. 1 for January) and finally `YYYYMMDD` represents a numeric date format representation (eg. `20190516` for May 16, 2019).
+    /wwi-02/sale-small/Year=`YYYY`/Quarter=`Q#`/Month=`M`/Day=`YYYYMMDD`, where `YYYY` is the 4-digit year (e.g., 2019), `Q#` represents the quarter (e.g., Q1), `M` represents the numerical month (e.g., 1 for January) and finally `YYYYMMDD` represents a numeric date format representation (e.g., `20190516` for May 16, 2019).
     > A single parquet file is stored each day folder with the name **sale-small-YYYYMMDD-snappy.parquet** (replacing `YYYYMMDD` with the numeric date representation).
 
     ```text
@@ -381,9 +381,9 @@ The data that we will be retrieving to populate the sale table is currently stor
 
 25. Once published, expand the **Add trigger** item on the pipeline designer toolbar, and select **Trigger now**. In the **Pipeline run** blade, select **OK** to proceed with the latest published configuration. You will see notification toast windows indicating the pipeline is running and when it has completed.
 
-    > &#x1F534; **Note**: This pipeline is processing 667,049,970 rows of 2018 and 2019 sales data. Please proceed to the next task! When the pipeline completes, you will see a notification in Azure Synapse Analytics studio. At that time you can verify your data if you choose (step 29 in this exercise).
+    > &#x1F534; **Note**: This pipeline is processing 667,049,970 rows of 2018 and 2019 sales data. Please proceed to the next task! When the pipeline completes, you will see a notification in Azure Synapse Analytics studio. At that time, you can verify your data if you choose (step 29 in this exercise).
 
-26. View the status of the pipeline run by locating the **ASAMCW - Exercise 2 - Copy Sale Data** pipeline in the Integrate blade. Expand the actions menu, and select the **Monitor** item.
+26. View the status of the pipeline run by locating the **ASAMCW - Exercise 2 - Copy Sale Data** pipeline in the Integrate blade. Expand the actions menu and select the **Monitor** item.
 
     ![In the Integrate blade, the Action menu is displayed with the Monitor item selected on the ASAMCW - Exercise 2 - Copy Sale Data pipeline.](media/orchestrate_pipeline_monitor_copysaledata.png "Monitoring a pipeline")
   
@@ -946,11 +946,11 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
  > We import required Python libraries to use aggregation functions and types defined in the schema to successfully execute the query.
 
-## Exercise 4: Exploring raw text based data with Azure Synapse SQL Serverless
+## Exercise 4: Exploring raw text-based data with Azure Synapse SQL Serverless
 
 **Duration**: 15 minutes
 
-A common format for exporting and storing data is with text based files. These can delimited text files such as CSV as well as JSON structured data files. Azure Synapse Analytics also provides ways of querying into these types of raw files to gain valuable insights into the data without having to wait for them to be processed.
+A common format for exporting and storing data is with text-based files. These can delimit text files such as CSV as well as JSON structured data files. Azure Synapse Analytics also provides ways of querying into these types of raw files to gain valuable insights into the data without having to wait for them to be processed.
 
 ### Task 1: Query CSV data
 
@@ -1185,7 +1185,7 @@ In many organizations it is important to filter certain rows of data by user. In
     revert;
     -- And he can.
 
-    --Step:6 To disable the security policy we just created above, we execute the following.
+    --Step:6 To disable the security policy we just created above; we execute the following:
     ALTER SECURITY POLICY SalesFilter  
     WITH (STATE = OFF);
 
@@ -1559,7 +1559,7 @@ Setting importance in Synapse SQL for Azure Synapse allows you to influence the 
 
     ![The run button is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-run.png "Run")
 
-6. Next, you will flood the system with queries and see what happens for `asa.sql.workload01` and `asa.sql.workload02`. To do this, we'll run a Azure Synapse Pipeline that executes a large number of queries.
+6. Next, you will flood the system with queries and see what happens for `asa.sql.workload01` and `asa.sql.workload02`. To do this, we'll run an Azure Synapse Pipeline that executes a large number of queries.
 
 7. Select the `Integrate` item from the left menu.
 
@@ -1603,7 +1603,7 @@ Setting importance in Synapse SQL for Azure Synapse allows you to influence the 
 
 15. Select **Run** from the toolbar menu to execute the SQL command.
 
-16. Let's flood the system again with queries and see what happens this time for `asa.sql.workload01` and `asa.sql.workload02` queries. To do this, we'll run an Azure Synapse Pipeline that runs a large number queries. **Similar to before, run this pipeline for about 30 seconds to 1 minute**.
+16. Let's flood the system again with queries and see what happens this time for `asa.sql.workload01` and `asa.sql.workload02` queries. To do this, we'll run an Azure Synapse Pipeline that runs a large number of queries. **Similar to before, run this pipeline for about 30 seconds to 1 minute**.
 
     - **Select** the `Integrate` item from the left menu.
 
@@ -1770,7 +1770,7 @@ All logins to your data warehouse are logged to `sys.dm_pdw_exec_sessions`. This
 
 5. Select **Run** from the toolbar menu to execute the SQL command.
 
-6. Let's flood the system with queries to create operations to monitor. To do this, we will run a Azure Synapse Pipeline which triggers queries. Select the `Integrate` item from the left menu. **Run** the **Exercise 7 - Execute Business Analyst Queries** Pipeline, which will run / trigger  `asa.sql.workload02` queries. **Let this pipeline run for 30 seconds to 1 minute, then cancel the run recursively**.
+6. Let's flood the system with queries to create operations to monitor. To do this, we will run an Azure Synapse Pipeline which triggers queries. Select the `Integrate` item from the left menu. **Run** the **Exercise 7 - Execute Business Analyst Queries** Pipeline, which will run / trigger  `asa.sql.workload02` queries. **Let this pipeline run for 30 seconds to 1 minute, then cancel the run recursively**.
 
 7. In the query window, replace the script with the following:
 
@@ -1888,7 +1888,7 @@ In this exercise you will create a Synapse Pipeline that will orchestrate updati
 
 3. On the **New container** blade, name the container **invoices**, and select **Create**, we will keep the default values for the remaining fields.
 
-4. Repeat steps 2 and 3, and create two additional containers named **invoices-json** and **invoices-staging**.
+4. Repeat steps 2 and 3 and create two additional containers named **invoices-json** and **invoices-staging**.
 
 5. From the left menu, select **Storage Explorer (preview)**. Then, in the hierarchical menu, expand the **BLOB CONTAINERS** item.
 
