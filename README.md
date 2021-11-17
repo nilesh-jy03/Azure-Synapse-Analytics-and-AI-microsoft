@@ -14,19 +14,19 @@ October 2021
 
 ### Workshop
 
-In this workshop, you will look at the process of creating an end-to-end solution using Azure Synapse Analytics. The workshop will cover data loading, data preparation, data transformation, and data serving, along with performing machine learning and handling of both batch and real-time data.
+In this workshop, you will look at the process of creating an end-to-end solution using Azure Synapse Analytics. The workshop will cover data loading, data preparation, data transformation, and data serving, along with performing machine learning and handling both batch and real-time data.
 
 At the end of this whiteboard design session, you will be better able to design and build a complete end-to-end advanced analytics solution using Azure Synapse Analytics.
 
 ### Whiteboard design session
 
-In this whiteboard design session, you will work in a group to look at the process of designing an end-to-end solution using Azure Synapse Analytics. The design session will cover data loading, data preparation, data transformation, and data serving, along with performing machine learning and handling of both batch and real-time data.
+In this whiteboard design session, you will work in a group to look at the process of designing an end-to-end solution using Azure Synapse Analytics. The design session will cover data loading, data preparation, data transformation, and data serving, along with performing machine learning and handling both batch and real-time data.
 
 At the end of this whiteboard design session, you will be better able to design and build a complete end-to-end advanced analytics solution using Azure Synapse Analytics.
 
 ### Hands-on lab
 
-In this hands-on lab, you will build an end-to-end data analytics with a machine learning solution using Azure Synapse Analytics. The information will be presented in the context of a retail scenario. We will be heavily leveraging Azure Synapse Studio, a tool that conveniently unifies the most common data operations from ingestion, transformation, querying, and visualization.
+In this hands-on lab, you will build end-to-end data analytics with a machine learning solution using Azure Synapse Analytics. The information will be presented in the context of a retail scenario. We will be heavily leveraging Azure Synapse Studio, a tool that conveniently unifies the most common data operations from ingestion, transformation, querying, and visualization.
 
 ## Azure services and related products
 
