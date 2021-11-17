@@ -117,11 +117,11 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   
 3. Select **Review + Create**, then **Create** on the validation screen.
 
-    > **Note**: You may experience a deployment step failing in regard to Role Assignment. This error may safely be ignored.
+    > **Note**: You may experience a deployment step failing regarding Role Assignment. This error may safely be ignored.
 
 ### Task 3: Download lab artifacts
 
-1. In the Azure Portal, open the Azure Cloud Shell by selecting its icon from the right side of the top toolbar. Be sure to select **Powershell** as the shell type.
+1. In the Azure Portal, open the Azure Cloud Shell by selecting its icon from the right side of the top toolbar. Be sure to select **PowerShell** as the shell type.
 
     ![A portion of the Azure Portal taskbar is displayed with the Cloud Shell icon highlighted.](media/bhol_azurecloudshellmenu.png "Opening the Cloud Shell")
 
