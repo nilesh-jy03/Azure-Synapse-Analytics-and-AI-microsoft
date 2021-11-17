@@ -94,7 +94,7 @@ Analyze your customer's needs.
 
 - Customer's background, situation, needs and technical requirements
 
-- Current customer infrastructure and architecture
+- Customer's current infrastructure, architecture, and capabilities
 
 - Potential issues, objectives and blockers
 

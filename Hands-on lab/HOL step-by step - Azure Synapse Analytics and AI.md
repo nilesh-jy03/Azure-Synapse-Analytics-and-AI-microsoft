@@ -1286,7 +1286,7 @@ In this exercise, you will create a regression model to predict product forecast
 
 ### Task 1: Grant Contributor rights to the Azure Machine Learning Workspace to the Synapse Workspace Managed Identity
 
-Azure Synapse Analytics supports the concept of a Managed Identity. This identity is automatically created when the Synapse Workspace is deployed and represents the Azure Synapse Analytics workspace when interacting with other Azure Resources. Data pipelines defined within Azure Synapse Analytics will run under the context of this identity; therefore, it must be granted appropriate permissions to all the integrations contained within the pipeline. These permission requirements are equally valid for the Azure Machine Learning integration.
+Azure Synapse Analytics supports using Managed Identities for authentication across services instead of using traditional credentials or secrets. A Managed Identity, which can be created automatically at the time a service is provisioned or separately and associated later, is authenticated using Azure Active Directory and represents the service itself when interacting with other Azure resources.
 
 In this task, the Synapse Workspace Managed Identity will be granted **Contributor** rights to the Azure Machine Learning workspace.
 

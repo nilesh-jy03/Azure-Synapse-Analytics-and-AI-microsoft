@@ -65,12 +65,12 @@ def process_form(value):
     # Endpoint URL for your form recognizer service
     endpoint = r"<<endpointurl>>"
     #Key for the Form Recognizer Service
-    apim_key = "key1"
+    apim_key = "<<key1>>"
     #Insert the ID for the form recognizer model
-    model_id = "modelid"
+    model_id = "<<modelid>>"
     post_url = endpoint + "/formrecognizer/v2.0/custom/models/%s/analyze" % model_id
     #Azure storage connection string where files will be uploaded
-    connectionstring = "DefaultEndpointsProtocol=https;AccountName=asastore{{suffix}};AccountKey=key;EndpointSuffix=core.windows.net"
+    connectionstring = "<<DefaultEndpointsProtocol=https;AccountName=asastore{{suffix}};AccountKey=key;EndpointSuffix=core.windows.net>>"
     path = fullpath.split(".net/",1)
     path = path[1]
     blobpath = path.split("/",1)
