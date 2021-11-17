@@ -181,8 +181,8 @@ $params = @{
 }
 $workloadPipelines = [ordered]@{
         copy_products_pipeline = "ASAMCW - Exercise 2 - Copy Product Information"
-        execute_business_analyst_queries = "ASAMCW - Exercise 8 - ExecuteBusinessAnalystQueries"
-        execute_data_analyst_and_ceo_queries = "ASAMCW - Exercise 8 - ExecuteDataAnalystAndCEOQueries"
+        execute_business_analyst_queries = "ASAMCW - Exercise 7 - ExecuteBusinessAnalystQueries"
+        execute_data_analyst_and_ceo_queries = "ASAMCW - Exercise 7 - ExecuteDataAnalystAndCEOQueries"
 }
 
 foreach ($pipeline in $workloadPipelines.Keys) 
@@ -198,32 +198,6 @@ foreach ($pipeline in $workloadPipelines.Keys)
         write-host $_.exception;
     }
 }
-
-Write-Information "Creating Spark notebooks..."
-
-$notebooks = [ordered]@{
-        "ASAMCW - Exercise 7 - Machine Learning" = ".\notebooks\ASAMCW - Exercise 7 - Machine Learning.ipynb"      
-}
-
-$cellParams = [ordered]@{
-        "#DATALAKEACCOUNTNAME#" = $dataLakeAccountName
-        "#DATALAKEACCOUNTKEY#" = $dataLakeAccountKey
-        "#SQL_POOL_NAME#" = $sqlPoolName
-        "#SUBSCRIPTION_ID#" = $subscriptionId
-        "#RESOURCE_GROUP_NAME#" = $resourceGroupName
-        "#AML_WORKSPACE_NAME#" = $amlWorkspaceName
-}
-
-foreach ($notebookName in $notebooks.Keys) 
-{
-        $notebookFileName = "$($notebooks[$notebookName])"
-        Write-Information "Creating notebook $($notebookName) from $($notebookFileName)"
-        
-        $result = Create-SparkNotebook -TemplatesPath $templatesPath -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName `
-                -WorkspaceName $workspaceName -SparkPoolName $sparkPoolName -Name $notebookName -NotebookFileName $notebookFileName -CellParams $cellParams
-        $result
-}
-
 
 $publicDataUrl = "https://solliancepublicdata.blob.core.windows.net/"
 $dataLakeStorageUrl = "https://"+ $dataLakeAccountName + ".dfs.core.windows.net/"
@@ -411,14 +385,13 @@ foreach($path in $pathsAndCounts.Keys){
 }
 
 $asaArtifacts = [ordered]@{
-        "asamcw_wwi_salesmall_workload1_asa" = "datasets"                
-        "asamcw_wwi_salesmall_workload2_asa" = "datasets" 
-        "asamcw_product_csv" = "datasets"                
-        "asamcw_product_asa" = "datasets"   
+        "asamcw_wwi_salesmall_workload1_asa" = "datasets"
+        "asamcw_wwi_salesmall_workload2_asa" = "datasets"
+        "asamcw_product_csv" = "datasets"
+        "asamcw_product_asa" = "datasets"
         "ASAMCW - Exercise 2 - Copy Product Information" = "pipelines"
-        "ASAMCW - Exercise 8 - ExecuteBusinessAnalystQueries" = "pipelines"   
-        "ASAMCW - Exercise 8 - ExecuteDataAnalystAndCEOQueries" = "pipelines"     
-        "ASAMCW - Exercise 7 - Machine Learning" = "notebooks"
+        "ASAMCW - Exercise 7 - ExecuteBusinessAnalystQueries" = "pipelines"
+        "ASAMCW - Exercise 7 - ExecuteDataAnalystAndCEOQueries" = "pipelines"
         "$($keyVaultName)" = "linkedServices"
         "$($dataLakeAccountName)" = "linkedServices"
         "$($blobStorageAccountName)" = "linkedServices"

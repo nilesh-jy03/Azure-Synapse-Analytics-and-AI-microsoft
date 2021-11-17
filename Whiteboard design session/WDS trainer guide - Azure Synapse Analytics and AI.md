@@ -9,7 +9,7 @@ Whiteboard design session trainer guide
 </div>
 
 <div class="MCWHeader3">
-June 2021
+October 2021
 </div>
 
 Information in this document, including URL and other Internet Web site references, is subject to change without notice. Unless otherwise noted, the example companies, organizations, products, domain names, e-mail addresses, logos, people, places, and events depicted herein are fictitious, and no association with any real company, organization, product, domain name, e-mail address, logo, person, place or event is intended or should be inferred. Complying with all applicable copyright laws is the responsibility of the user. Without limiting the rights under copyright, no part of this document may be reproduced, stored in or introduced into a retrieval system, or transmitted in any form or by any means (electronic, mechanical, photocopying, recording, or otherwise), or for any purpose, without the express written permission of Microsoft Corporation.
@@ -94,7 +94,7 @@ Analyze your customer's needs.
 
 - Customer's background, situation, needs and technical requirements
 
-- Current customer infrastructure and architecture
+- Customer's current infrastructure, architecture, and capabilities
 
 - Potential issues, objectives and blockers
 
@@ -174,7 +174,7 @@ In this whiteboard design session, you will work in a group to look at the proce
 
 At the end of this whiteboard design session, you will be better able to design and build a complete end-to-end advanced analytics solution using Azure Synapse Analytics.
 
-## Step 1: Review the customer case study
+## Step 1: Review the customer case study 
 
 **Outcome**
 
@@ -182,13 +182,13 @@ Analyze your customer's needs.
 
 Timeframe: 15 minutes
 
-Directions:  With all participants in the session, the facilitator/SME presents an overview of the customer case study along with technical tips.
+Directions: With all participants in the session, the facilitator/SME presents an overview of the customer case study along with technical tips.
 
-1. Meet your table participants and trainer.
+1. Meet your team members and trainer.
 
-2. Read all of the directions for steps 1-3 in the student guide.
+2. Read all directions for steps 1-3 in the student guide.
 
-3. As a table team, review the following customer case study.
+3. As a team, review the following customer case study.
 
 ### Customer situation
 
@@ -200,9 +200,11 @@ They understand that using analytics on top of retail data has the potential to 
 
 They would like to combine their retail lifecycle data, including customer data, operations data, sourcing, and supplier data as well as transaction data with analytics to reduce churn, enhance loyalty, advance customer journeys, enable the ability to conduct contextual marketing, measure attribution and provide insights across their enterprise to drive growth across the organization holistically. However, WWI is worried that finding the correct data in a larger pool can be much more challenging after the unification.
 
-They are looking to use historical campaign and customer analytics data and make decisions for the present. Beyond these large historical data sets, they would like to use streaming tweet data from Twitter and telemetry from IoT sensors in their brick and mortar locations. In effect, they would like to use data from the present moment to inform decisions for the next moment. WWI sees an opportunity to use their data to predict the future, initially by making product recommendations.
+WWI routinely receives PDF invoices from suppliers for various parts they require in their operation. Currently they perform manual review and data entry of this data. They would like to automate keeping their part costs table updated.
 
-According to Peter Guerin, Chief Technical Officer (CTO), Wide World Importers has over five years of sales transaction data from Oracle, consisting of more than 30  billion rows. But that is not their only enterprise data source. They have finance data stored in SAP HANA, marketing data in Teradata, and social media data coming in from Twitter. They need a solution that allows them to discover, integrate, query, and analyze the data from all of these sources. They worry that their current catalog might be missing some internal data sets used by smaller departments. Additionally, regardless of the volume, they want to be able to execute queries across such data with results returning in seconds.
+They are looking to use historical campaign and customer analytics data and make decisions for the present. Beyond these large historical data sets, they would like to use streaming tweet data from Twitter and telemetry from IoT sensors in their brick-and-mortar locations. In effect, they would like to use data from the present moment to inform decisions for the next moment. WWI sees an opportunity to use their data to predict the future, initially by making product recommendations.
+
+According to Peter Guerin, Chief Technical Officer (CTO), Wide World Importers has over five years of sales transaction data from Oracle, consisting of more than 30  billion rows. But that is not their only enterprise data source. They have finance data stored in SAP HANA, marketing data in Teradata, and social media data coming in from Twitter. They need a solution that allows them to discover, integrate, query, and analyze the data from all these sources. They worry that their current catalog might be missing some internal data sets used by smaller departments. Additionally, regardless of the volume, they want to be able to execute queries across such data with results returning in seconds.
 
 In addition to those data sources, they have in-store IoT sensors producing telemetry data that track the traffic patterns of customers walking the aisles. Each store has 50 sensors, and they have 100 stores equipped to provide this real-time data. Using this data, they want to understand in which departments (or groups of aisles) people are spending most of their time and which of those they are not. They would like a solution to ensure that this data gets ingested and processed in near real-time, allowing them to quickly identify patterns that can be shared between stores. For example, as stores open on the East Coast, patterns detected in early buying behavior could inform last-minute offers and in-store product placement of products in their West Coast stores that have yet to open.
 
@@ -224,7 +226,7 @@ To bring their entire operation into perspective, Wide World Importers would lik
 
 5. Enhanced ability to discovery data using business or technical terms for business analysts.
 
-6. Minimize the number of disparate services they use across ingest, transformation, querying and storage, so that teams of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management and monitoring.
+6. Minimize the number of disparate services they use across ingest, transformation, querying and storage, so that teams of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management, and monitoring.
 
 7. Work within a single collaborative environment.
 
@@ -236,13 +238,15 @@ To bring their entire operation into perspective, Wide World Importers would lik
 
 11. Create a solution that provides a consistent security model across all components.
 
+12. Automate the updating of parts prices based on incoming supplier invoices.
+
 ### Customer objections
 
 1. WWI understands that Azure offers several services with overlapping capabilities.  They do not want to spend the time stitching them together to get to the desired analytics solution.
 
 2. WWI have seen demos from competing systems that claim to load massive datasets in seconds. Does Azure offer such a solution?
 
-3. Is it really possible to minimize the number of disparate services they use across ingest, transformation, querying and storage, so that WWI team of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management and monitoring?
+3. Is it really possible to minimize the number of disparate services they use across ingest, transformation, querying and storage, so that WWI team of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management, and monitoring?
 
 4. WWI have heard of serverless querying, does Azure offer this? Does it support querying the data at the scale of WWI and what formats does it support? Would this be appropriate for supporting WWI dashboards or reports?
 
@@ -272,15 +276,15 @@ Timeframe: 60 minutes
 
 **Business needs**
 
-Directions: With all participants at your table, answer the following questions and list the answers on a flip chart:
+Directions: With your team, answer the following questions and be prepared to present your solution to others:
 
-1. Who should you present this solution to? Who is your target customer audience? Who are the decision makers?
+1. Who will you present this solution to? Who is your target customer audience? Who are the decision makers?
 
 2. What customer business needs do you need to address with your solution?
 
 **Design**
 
-Directions: With all participants at your table, respond to the following questions on a flip chart:
+Directions: With your team, respond to the following questions:
 
 *High Level Architecture*
 
@@ -297,6 +301,8 @@ Directions: With all participants at your table, respond to the following questi
 4. When it comes to ingesting raw data in batch from new data sources, what data formats could they support with your solution?
 
 5. How will you ingest streaming data from the in-store IoT devices?
+
+6. WWI is interested in the concept of Microsoft Dataverse to leverage visual designers to quickly define tables, relationships, business rules, forms, and workflows. How could this data be leveraged in Azure Synapse Analytics?
 
 *Transform*
 
@@ -370,7 +376,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 3. One of WWI's challenges is that while multiple departments might be able to query a given table, what data they should be allowed to see depends on their department or role within the company. How could your solution support this? You should suggest three options.
 
-4. Can the solution help WWI discover, track and remediate security misconfigurations and detect threats? How?
+4. Can the solution help WWI discover, track, and remediate security misconfigurations and detect threats? How?
 
 5. Can WWI use this same solution to monitor sensitive information by enabling them to discover, classify and protect and track access to such data?
 
@@ -386,7 +392,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 **Prepare**
 
-Directions: With all participants at your table:
+Directions: As a team:
 
 1. Identify any customer needs that are not addressed with the proposed solution.
 
@@ -408,9 +414,9 @@ Timeframe: 30 minutes
 
 Directions:
 
-1. Pair with another table.
+1. Pair with another team.
 
-2. One table is the Microsoft team and the other table is the customer.
+2. One group is the Microsoft team and the other is the customer.
 
 3. The Microsoft team presents their proposed solution to the customer.
 
@@ -420,13 +426,13 @@ Directions:
 
 6. The customer team gives feedback to the Microsoft team.
 
-7. Tables switch roles and repeat Steps 2-6.
+7. Switch roles and repeat Steps 2-6.
 
 ## Wrap-up
 
 Timeframe: 15 minutes
 
-Directions: Tables reconvene with the larger group to hear the facilitator/SME share the preferred solution for the case study.
+Directions: Reconvene with the larger group to hear the facilitator/SME share the preferred solution for the case study.
 
 ## Additional references
 
@@ -452,25 +458,27 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Sensitivity label insights about your data in Azure Purview | <https://docs.microsoft.com/en-us/azure/purview/sensitivity-insights>                                                                                                                                                                                                               |
 | Azure Purview | <https://azure.microsoft.com/en-us/services/purview/> |
 | Azure Purview - Map, Discover, and Find Insights Across Data Sources | <https://youtu.be/27bA4KFiEKk> |
-
+| Azure Synapse Link for Dataverse | <https://docs.microsoft.com/en-us/powerapps/maker/data-platform/export-to-data-lake> |
+| MCW Cosmos DB Real-Time Advanced Analytics (Synapse Link for Cosmos DB) | <https://github.com/Microsoft/MCW-Cosmos-DB-Real-Time-Advanced-Analytics> |
+| Query Delta Lake files using serverless SQL pool in Azure Synapse Analytics | <https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/query-delta-lake-format> |
 
 # Azure Synapse Analytics and AI whiteboard design session trainer guide
 
 ## Step 1: Review the customer case study
 
-- Check in with your table participants to introduce yourself as the trainer.
+- Check in with your participants to introduce yourself as the trainer.
 
 - Ask, "What questions do you have about the customer case study?"
 
 - Briefly review the steps and timeframes of the whiteboard design session.
 
-- Ready, set, go! Let the table participants begin.
+- Ready, set, go! Let participants begin.
 
 ## Step 2: Design a proof of concept solution
 
-- Check in with your tables to ensure that they are transitioning from step to step on time.
+- Check in with your teams to ensure that they are transitioning from step to step on time.
 
-- Provide some feedback on their responses to the business needs and design.
+- Provide feedback on their responses to the business needs and design.
 
   - Try asking questions first that will lead the participants to discover the answers on their own.
 
@@ -480,9 +488,9 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 
 ## Step 3: Present the solution
 
-- Determine which table will be paired with your table before Step 3 begins.
+- Determine which groups will be paired together before Step 3 begins.
 
-- For the first round, assign one table as the presenting team and the other table as the customer.
+- For the first round, assign one group as the presenting team and the other as the customer.
 
 - Have the presenting team present their solution to the customer team.
 
@@ -494,7 +502,7 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 
 ## Wrap-up
 
-- Have the table participants reconvene with the larger session group to hear the facilitator/SME share the following preferred solution.
+- Have participants reconvene with the larger session group to hear the facilitator/SME share the following preferred solution.
 
 ## Preferred target audience
 
@@ -508,7 +516,7 @@ The primary audience is the business decision makers and technology decision mak
 
 1. Diagram your initial vision for handling the top-level requirements for data discovery, governance, loading, data transformation, storage, machine learning modeling, and reporting.
 
-    The following diagram illustrates the high level process for the "cold path" of the data pipeline architecture. It begins with ingesting the data from the Oracle, SAP Hana and Teradata sources. This can be done within Azure Synapse Analytics using Azure Synapse Pipelines containing the Copy Data activity, which lands the data in Azure Data Lake Gen2. When performing initial exploration of the data in the data lake, the data can be readily explored using Azure Synapse SQL to explore it with T-SQL or using Azure Synapse Spark to explore it within notebooks.
+    The following diagram illustrates the high level process for the "cold path" of the data pipeline architecture. It begins with ingesting the data from the Oracle, SAP Hana, and Teradata sources. This can be done within Azure Synapse Analytics using Azure Synapse Pipelines containing the Copy Data activity, which lands the data in Azure Data Lake Gen2. When performing initial exploration of the data in the data lake, the data can be readily explored using Azure Synapse SQL to explore it with T-SQL or using Azure Synapse Spark to explore it within notebooks.
 
     At the Preparation stage, Mapping Data Flows, which are Synapse Pipeline activities just like the Copy Data activity, can be created using the graphical designer to perform some data preparation tasks. This preparation step is used to ensure the data being stored in a useful format, like parquet. Initial data cleansing to remove duplicates, filter out erroneous data, as well as impute missing values.
 
@@ -516,9 +524,9 @@ The primary audience is the business decision makers and technology decision mak
 
     Azure Synapse SQL offers both serverless and provisioned resource models, offering consumption and billing options to fit the customer's needs. For predictable performance and cost, provision pools to reserve processing power for data stored in SQL tables. For ad hoc or bursty workloads, use the serverless, always-available SQL endpoint.
 
-    Azure Synapse SQL Pools and the Azure Synapse SQL serverless endpoint can be used to apply transformations using T-SQL, as can notebooks running in Azure Synapse Spark. A Synapse Pipeline is also commonly used at this stage to define a repeatable process for cleaning, joining, enriching and ultimately loading the data into the Azure Synapse SQL that functions as the serving database.
+    Azure Synapse SQL Pools and the serverless SQL pool can be used to apply transformations using T-SQL, as can notebooks running in Azure Synapse Spark. A Synapse Pipeline is also commonly used at this stage to define a repeatable process for cleaning, joining, enriching, and ultimately loading the data into the Azure Synapse SQL that functions as the serving database.
 
-    The serving layer can consist of a dedicated Azure Synapse SQL Pool to provide pre-provisioned compute capacity to serve both data from the relational data warehouse or data sourced from the data lake. Additionally, the serving layer can use Azure Synapse SQL serverless to provide ad-hoc compute capacity for querying data stored in the data lake. Either of these serving options can be used by Power BI reports created within Azure Synapse Analytics, or by external applications. The important take away from this architecture is that all of the components shown are completely managed within Azure Synapse Analytics.
+    The serving layer can consist of a dedicated Azure Synapse SQL pool to provide pre-provisioned compute capacity to serve both data from the relational data warehouse or data sourced from the data lake. Additionally, the serving layer can use Azure serverless SQL pool to provide ad-hoc compute capacity for querying data stored in the data lake. Either of these serving options can be used by Power BI reports created within Azure Synapse Analytics, or by external applications. The important take away from this architecture is that all the components shown are completely managed within Azure Synapse Analytics.
 
     Data governance is another challenge in large enterprise environments. On the one hand, business analysts need to discover and understand data assets that can help them solve business problems. On the other hand, Chief Data Officers want insights on the privacy and security of business data. WWI can use Azure Purview for data discovery and governance, insights into their data assets, data classification, and sensitivity covering the entire organizational data landscape. In addition, WWI can register all their data sources and set up regular scans to automatically catalog and update relevant metadata about data assets in the organization. Azure Purview can manage on-premises, multi-cloud, and software as a service (SaaS) data if required.
 
@@ -550,7 +558,7 @@ The primary audience is the business decision makers and technology decision mak
 
     In ADLS, it is a best practice to have a dedicated Storage Account for production, and a separate Storage Account for dev and test workloads. This will ensure that dev or test workloads never interfere with production.  
 
-    One common folder structure is to organize the data in separate folders by degree of refinement. For example, a bronze folder contains the raw data, silver contains the cleaned, prepared and integrated data and gold contains data ready to support analytics, which might include final refinements such as pre-computed aggregates.
+    One common folder structure is to organize the data in separate folders by degree of refinement. For example, a bronze folder contains the raw data, silver contains the cleaned, prepared, and integrated data and gold contains data ready to support analytics, which might include final refinements such as pre-computed aggregates.
 
 4. When it comes to ingesting raw data in batch from new data sources, what data formats could they support with your solution?
 
@@ -560,25 +568,29 @@ The primary audience is the business decision makers and technology decision mak
 
     They should collect messages in Event Hub or IoT Hub and process them with Stream Analytics.
 
+6. WWI is interested in the concept of Microsoft Dataverse to leverage visual designers to quickly define tables, relationships, business rules, forms, and workflows. How could this data be leveraged in Azure Synapse Analytics?
+
+    [Azure Synapse Link for Dataverse](https://docs.microsoft.com/en-us/powerapps/maker/data-platform/export-to-data-lake) provides continuous data export functionality between Dataverse and Azure Synapse Analytics and/or Azure Data Lake Storage Gen2. This includes the standard tables as well as custom tables (including create, update, and delete transactions).
+
 *Transform*
 
 1. Before building transformation pipelines or loading it into the data warehouse, how can WWI quickly explore the raw ingested data to understand its contents?
 
-    Using Azure Synapse Studio, for any parquet files stored in ADLS, they can right click on a parquet file to query as SQL or as DataFrame in a notebook.
+    Using Azure Synapse Studio, for any parquet files stored in ADLS, they can right-click on a parquet file to query as SQL or as DataFrame in a notebook.
 
 2. When it comes to storing refined versions of the data for possible querying, what data format would you recommend they use? Why?
 
-    Parquet. There is industry alignment around the Parquet format for sharing data at the storage layer (e.g., across Hadoop, Databricks, and SQL engine scenarios). Parquet is a high-performance, column oriented format optimized for big data scenarios.
+    Parquet. There is industry alignment around the Parquet format for sharing data at the storage layer (e.g., across Hadoop, Databricks, and SQL engine scenarios). Parquet is a high-performance, column-oriented format optimized for big data scenarios. Furthermore, both the serverless SQL pool in Azure Synapse Analytics and the Spark pools support Delta Lake ([serverless SQL pool support](https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/query-delta-lake-format), [Apache Spark pool support](https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-delta-lake-overview)). It is important to note that at this time the serverless SQL pool can only read Delta Lake, any updates will need to be done using an Apache Spark pool.
 
-3. Regarding the service you recommend they use for preparing, merging and transforming the data, in which situations can they use the graphical designer and which situations would require code?
+3. Regarding the service you recommend they use for preparing, merging, and transforming the data, in which situations can they use the graphical designer and which situations would require code?
 
-    They could use Mapping Data Flows that they graphically design in Azure Synapse Studio. These code-free data flows provide for scalable execution. Data Flows define a domain specific language for transformation and convert that into code that runs on Spark, which runs at scale and provides elasticity for handling growing volumes of data.
+    They could use Mapping Data Flows that they graphically design in Azure Synapse Studio. These code-free data flows provide for scalable execution. Data Flows define a domain specific language for transformation and convert that into code that runs on Spark, which runs at scale and provides elasticity for handling growing volumes of data. By default, a new Spark cluster is provisioned to service the data flow activity, this impacts the start-up time of the activity. If a pipeline contains multiple sequential data flows it is recommended to set the Time To Live (TTL) value and set the "Quick re-use" option to true in the Azure Integration Runtime settings under the Data Flow Properties. These settings will tell the service to not teardown the existing cluster after each activity and instead re-use the cluster thus avoiding the cold-start issue of provisioning a new cluster for each data flow activity as long as it is still within the TTL window (sliding window, the TTL resets after each execution of a Data Flow).
 
     They can use code when their data engineers prefer to use Spark to transform the data via DataFrames.
 
 4. Their data team is accustomed to leveraging open source packages that help them quickly pre-process the data, as well as enable their data scientists to train machine learning models using both Spark and Python. Explain how your solution would enable this.
 
-    Pre-processing of data can occur in Azure Synapse Analytics as it supports open source Apache Spark and the execution of Python, Scala and (in the near future) R code. Their data team would be able to use the familiar Jupyter notebooks and leverage their favorite libraries. Model training should be done with Azure Machine Learning Studio. Here notebooks can be executed to train the models, the models can be registered as well as deployed to Kubernetes or ACI.
+    Pre-processing of data can occur in Azure Synapse Analytics as it supports open source Apache Spark and the execution of Python, C#, and Scala code. Their data team would be able to use the familiar Jupyter notebooks and leverage their favorite libraries. Model training should be done with Azure Machine Learning Studio. Here notebooks can be executed to train the models, the models can be registered as well as deployed to Kubernetes or ACI.
 
 5. Does your solution allow their data engineers and data scientists to work within Jupyter notebooks? How are libraries managed?
 
@@ -616,7 +628,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
     They should consider using Heap tables. For small lookup tables, less than 100 million rows, often heap tables make sense. Cluster columnstore tables begin to achieve optimal compression once there is more than 100 million rows.
 
-4. What would you suggest for their larger lookup tables that are used just for point lookups that retrieve only a single row? How could they makes these more flexible so that queries filtering against different sets of columns would still yield efficient lookups?
+4. What would you suggest for their larger lookup tables that are used just for point lookups that retrieve only a single row? How could they make these more flexible so that queries filtering against different sets of columns would still yield efficient lookups?
 
     Use clustered indexes. Clustered indexes may outperform clustered columnstore tables when a single row needs to be quickly retrieved. For queries where a single or a very few number of rows to lookup is required to perform with extreme speed, consider a cluster index or non-clustered secondary index.
 
@@ -674,7 +686,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 7. Some of their data contains columns in the JSON format, how could they flatten these hierarchical fields to a tabular structure?
 
-     They can use Azure Synapse SQL serverless along with the T-SQL OPENJSON, JSON_VALUE, and JSON_QUERY statements.
+     They can use serverless SQL pool in Azure Synapse Analytics along with the T-SQL OPENJSON, JSON_VALUE, and JSON_QUERY statements.
 
 8. What approach can they use to update the JSON data?
 
@@ -704,7 +716,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 1. What product can WWI use to visualize their retail transaction data? Is it a separate tool that they need to install?
 
-    Power BI. They can create, edit and view Power BI reports directly within the Azure Synapse Studio. They can also use Power BI Desktop to create and publish both datasets and reports that are then available within workspace.
+    Power BI. They can create, edit, and view Power BI reports directly within the Azure Synapse Studio. They can also use Power BI Desktop to create and publish both datasets and reports that are then available within workspace.
 
 2. Can they use this same tool to visualize both the batch and streaming data in a single dashboard view?
 
@@ -712,7 +724,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 3. With the product you recommend, do they need to load all the data into the data warehouse before they can create reports against it?
 
-    No, they only need to load the data into Azure Storage. Using Azure Synapse SQL serverless and Power BI they can create reports against the data directly.
+    No, they only need to load the data into Azure Storage. Using serverless SQL pool in Azure Synapse Analytics and Power BI they can create reports against the data lake directly, including leveraging Delta Lake format if it is being used.
 
 *Manage*
 
@@ -731,7 +743,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
      They can leverage the Azure Advisor recommendations.
 
-3. WWI recognizes there is a balance between the data warehouse software staying up to date and when they can afford downtime that might result. How can they establish their preferences with your solution so they are never caught off guard with an upgrade?
+3. WWI recognizes there is a balance between the data warehouse software staying up to date and when they can afford downtime that might result. How can they establish their preferences with your solution, so they are never caught off guard with an upgrade?
 
     They should leverage maintenance windows, a feature of Azure Synapse Analytics. With this they can:
      - Choose a time window for upgrades.
@@ -748,19 +760,19 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
     **Authorization in ADLS Gen2:** From an authorization standpoint, coarse grained access control can be applied at the container level in Azure Storage by specifying AAD roles. Furthermore, fine grained access control is enabled by setting POSIX ACLs at the folder level.
 
-    **Authorization in databases:** Management of database permissions is performed by setting access permissions on Azure Active Directory groups and users, which are external to the database. Object level security allows you to control permissions on tables, views, stored procedures and functions.
+    **Authorization in databases:** Management of database permissions is performed by setting access permissions on Azure Active Directory groups and users, which are external to the database. Object level security allows you to control permissions on tables, views, stored procedures, and functions.
 
 3. One of WWI's challenges is that while multiple departments might be able to query a given table, what data they should be allowed to see depends on their department or role within the company. How could your solution support this? You should suggest three options.
 
      WWI could achieve this in several ways using either Row Level Security, Column Level Security or Dynamic Data Masking. They might even benefit from all three being applied to the same table depending on their needs.
 
-     **Row Level Security:** In Azure Synapse Analytics, tables in Azure Synapse SQL databases support Row Level Security (RLS). RLS enables you to implement restrictions on data row access. The access restriction logic is located in the database tier rather than away from the data in another application tier. The database system applies the access restrictions every time that data access is attempted from any tier. Think of RLS as effectively filtering out rows the user is not authorized to select, update or delete. This makes your security system more reliable and robust by reducing the surface area of your security system.
+     **Row Level Security:** In Azure Synapse Analytics, tables in Azure Synapse SQL databases support Row Level Security (RLS). RLS enables you to implement restrictions on data row access. The access restriction logic is located in the database tier rather than away from the data in another application tier. The database system applies the access restrictions every time that data access is attempted from any tier. Think of RLS as effectively filtering out rows the user is not authorized to select, update, or delete. This makes your security system more reliable and robust by reducing the surface area of your security system.
 
      **Columns Level Security:** In addition, tables in Azure Synapse SQL databases support Column Level Security (CLS). CLS enables you to control access to specific columns in a database table based on a user's group membership or execution context.
 
-     **Dynamic Data Masking:** Alternately, if parts only parts of a field need to be displayed according to the users' group membership (such as displaying only a few characters of an email address), then WWI could use Dynamic Data Masking.
+     **Dynamic Data Masking:** Alternately, if only parts of a field need to be displayed according to the users' group membership (such as displaying only a few characters of an email address), then WWI could use Dynamic Data Masking.
 
-4. Can the solution help WWI discover, track and remediate security misconfigurations and detect threats? How?
+4. Can the solution help WWI discover, track, and remediate security misconfigurations and detect threats? How?
 
      There are two primary ways: using the SQL Vulnerability Assessment and with SQL Threat Detection.
 
@@ -771,7 +783,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
      The SQL Vulnerability Assessment is run from the Azure Portal. It takes a few seconds to run, and is entirely read-only. It does not make any changes to your database.
 
-    When the scan completes, you will presented with a report. The report presents an overview of your security state; how many issues were found, and their respective severities. Results include warnings on deviations from best practices, as well as a snapshot of your security-related settings, such as database principals and roles and their associated permissions. The scan report also provides a map of sensitive data discovered in your database, and includes recommendations of the built-in methods available to protect it.
+    When the scan completes, you will be presented with a report. The report presents an overview of your security state; how many issues were found, and their respective severities. Results include warnings on deviations from best practices, as well as a snapshot of your security-related settings, such as database principals and roles and their associated permissions. The scan report also provides a map of sensitive data discovered in your database and includes recommendations of the built-in methods available to protect it.
 
     From the report you can drill-down to each failed result to understand the impact of the finding, and why each security check failed. You can use the actionable remediation information provided by the report to resolve the issue, for example, by running a generated remediation script in a new query editor window.
 
@@ -784,7 +796,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
     Yes, by using SQL Data Discovery and Classification, which:
      - Automatically discovers columns containing potentially sensitive data.
      - Provides a simple way to review and apply the classification recommendations through the Azure portal.
-     - Persists sensitive data labels in the database (as metadata attributes), audits and detects access to the sensitive data. It includes a built-in set of labels and information types; however, users can chose to define custom labels across Azure tenant using Azure Security Center.
+     - Persists sensitive data labels in the database (as metadata attributes), audits and detects access to the sensitive data. It includes a built-in set of labels and information types; however, users can choose to define custom labels across Azure tenant using Azure Security Center.
      - This feature is accessed using the Azure Portal.
 
 6. From a network security standpoint, how should your solution be secured?
@@ -795,7 +807,7 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 1. How can you help WWI monitor their data from various sources as it flows through multiple processes and lands in multiple reports?
 
-    One of the platform features of Azure Purview is the ability to show the [lineage](https://docs.microsoft.com/en-us/azure/purview/concept-data-lineage) between datasets created by data processes. Azure Purview can automatically add data lineage information based on information from [Azure Data Factory or Azure Synapse pipelines](https://docs.microsoft.com/en-us/azure/purview/catalog-lineage-user-guide). Metadata collected in Azure Purview from enterprise data systems are stitched across to show an end to end data lineage. Data Factory, Data Share, Synapse, Azure Databricks can push lineage in to Azure Purview at execution time. Databases & storage solutions such as SQL Server, Teradata, and SAP have query engines to transform data using scripting language. Data lineage from stored procedures is collected in to Purview and stitched with lineage from other systems. Data systems like Azure ML and Power BI report lineage into Azure Purview as well.
+    One of the platform features of Azure Purview is the ability to show the [lineage](https://docs.microsoft.com/en-us/azure/purview/concept-data-lineage) between datasets created by data processes. Azure Purview can automatically add data lineage information based on information from [Azure Data Factory or Azure Synapse pipelines](https://docs.microsoft.com/en-us/azure/purview/catalog-lineage-user-guide). Metadata collected in Azure Purview from enterprise data systems are stitched across to show an end-to-end data lineage. Data Factory, Data Share, Synapse, Azure Databricks can push lineage in to Azure Purview at execution time. Databases & storage solutions such as SQL Server, Teradata, and SAP have query engines to transform data using scripting language. Data lineage from stored procedures is collected into Purview and stitched with lineage from other systems. Data systems like Azure ML and Power BI report lineage into Azure Purview as well.
 
     ![Screenshot showing how lineage is rendered for Power BI.](media/powerbi-lineage-end-end.png "How lineage is rendered for Power BI.")
 
@@ -821,20 +833,20 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
    - Azure Synapse Analytics is Microsoft's answer to this challenge, and is designed for supporting fast loads of massive datasets.
 
-3. Is it really possible to minimize the number of disparate services they use across ingest, transformation, querying and storage, so that WWI team of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management and monitoring?
+3. Is it really possible to minimize the number of disparate services they use across ingest, transformation, querying and storage, so that WWI team of data engineers, data scientists and database administrators can master one tool, and can build shared best practices for development, management, and monitoring?
 
    - Yes, Azure Synapse Analytics provides an integrated environment that does exactly this.
 
 4. WWI have heard of serverless querying, does Azure offer this? Does it support querying the data at the scale of WWI and what formats does it support? Would this be appropriate for supporting WWI dashboards or reports?
 
-   - Azure Synapse Analytics support serverless querying via the serverless SQL endpoint.
-   - Azure Synapse SQL serverless is an always available SQL endpoint that provides T-SQL querying over high scale data in Azure Storage, and is ideal for ad hoc or bursty workloads.
+   - Azure Synapse Analytics support serverless querying via the serverless SQL pool.
+   - The serverless SQL pool in Azure Synapse Analytics is an always available SQL endpoint that provides T-SQL querying over high scale data in Azure Storage, and is ideal for ad hoc or bursty workloads.
    - Supports data in various formats (Parquet, CSV, JSON)
    - It would be appropriate for dashboards and reports, as it supports Power BI and can be used refresh dashboard datasets. It is also appropriate for basic data discovery and exploration and supporting "single query ETL" that  transforms Azure Storage based data in a massively parallel fashion.
 
 5. If Azure provides serverless querying, does selecting serverless remove the option of using pre-allocated query resources?
 
-   - No. This is a unique differentiator of Azure Synapse Analytics. Within one Azure Synapse Analytics workspace, they can have pre-provisioned Azure Synapse SQL Pools, and also have serverless querying using the Azure Synapse SQL serverless endpoint.
+   - No. This is a unique differentiator of Azure Synapse Analytics. Within one Azure Synapse Analytics workspace, they can have pre-provisioned Azure Synapse SQL Pools, and also have serverless querying using the serverless SQL pool in Azure Synapse Analytics.
 
 6. Having multiple data sources, pipelines and reports makes it hard to track what data goes where and is accessed by who. Is there a way to visualize a complete data supply chain from raw data to business insights?
 
@@ -862,4 +874,4 @@ Their sales transaction dataset exceeds a billion rows. For their downstream rep
 
 "Microsoft really hit the mark with Azure Synapse Analytics- it gave us the integrated, scalable and performant analytics solution that we sought, and has enabled us to deliver impressive improvements to the business across all of our stores."
 
--- Peter Guerin, Chief Technical Officer (CTO), World Wide Importers.
+-- Peter Guerin, Chief Technical Officer (CTO), Wide World Importers.
