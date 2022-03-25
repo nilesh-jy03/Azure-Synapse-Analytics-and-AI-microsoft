@@ -1,3 +1,8 @@
+# Retirement notice
+This workshop will be retired effective July 30, 2022. At that time the repository will be archived, and the materials will not be maintained.
+
+For questions or concerns regarding the MCW library, email us at [AskMCW](mailto:AskMCW@microsoft.com). Please remember to include the title of the workshop in your email.
+
 # Azure Synapse Analytics and AI
 
 Wide World Importers (WWI) has hundreds of brick-and-mortar stores and an online store where they sell a variety of products. They would like to gain business insights using historical, real-time, and predictive analytics using structured and unstructured data sources. In doing so, they want to enable their IT team of data engineers and data scientists to bring in and run complex queries over petabytes of structured data with billions of rows and unstructured enterprise operational data. At the same time, they want to enable business analysts and their IT team to share a single source of truth and have a single workspace to collaborate and work with enterprise data and enriched customer data. They want to accomplish this by minimizing the number of disparate services they use across ingest, transformation, querying, and storage so that their team of data engineers, data scientists, and database administrators can master one tool, and can build shared best practices for development, management, and monitoring.
